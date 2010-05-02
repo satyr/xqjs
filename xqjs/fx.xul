@@ -1,0 +1,13 @@
+<overlay xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+ <keyset id="mainKeyset">
+  <key id="key_xqjs" label="xqjs" key="X" modifiers="alt"
+   oncommand="xqjs()"/>
+ </keyset>
+ <menupopup id="menu_ToolsPopup">
+  <menuitem id="menu_xqjs" label="xqjs" accesskey="x" key="key_xqjs"
+   oncommand="xqjs()" insertbefore="sanitizeSeparator"/>
+ </menupopup>
+ <script>
+  function xqjs() openDialog('chrome://xqjs/content','xqjs','resizable');
+ </script>
+</overlay>
