@@ -95,7 +95,7 @@ function macload(){
       Preferences.get('extensions.xqjs.macros', ''),
       Cu.Sandbox('about:blank'), 1.8);
   } catch(e){ Cu.reportError(e) }
-  if(!m) m = String
+  if(!m) m = String;
   else if(typeof m !== 'function'){
     let maclist = [[RegExp(k, 'g'), v] for([k, v] in Iterator(m))];
     m = function macrun(s){
@@ -125,20 +125,23 @@ function expand(s){
   if(coffee.checked){
     try { s = CoffeeScript.compile(s, {no_wrap: true}) }
     catch(e){
-      if(/^Parse error on line (\d+).*\n/.test(e.message)){
-        let lno = RegExp.$1;
-        let msg = 'CoffeeParseError: token position = '+ RegExp.rightContext;
-        let se = (Cc['@mozilla.org/scripterror;1']
-                  .createInstance(Ci.nsIScriptError));
-        se.init(msg, 'data:;charset=utf-8,'+ encodeURI(s),
-                s.split(/\r?\n/, lno).pop(), lno, null, se.errorFlag, null);
-        Services.console.logMessage(se);
-        say(msg);
-      } else Cu.reportError(say(e));
+      if(/^Parse error on line (\d+).*\n/.test(e.message))
+        cofferr(
+          s, 'ParseError: token position = '+ RegExp.rightContext, RegExp.$1);
+      else if(/^(SyntaxError.+) on line (\d+)/.test(e.message))
+        cofferr(s, RegExp.$1, RegExp.$2);
+      else Cu.reportError(p(e));
       return '';
     }
   }
   return s;
+}
+function cofferr(src, msg, lno, cno){
+  let se = (Cc['@mozilla.org/scripterror;1']
+            .createInstance(Ci.nsIScriptError));
+  se.init(say('Coffee'+ msg), 'data:;charset=utf-8,'+ encodeURI(src),
+          src.split(/\r?\n/, lno).pop(), lno, cno, se.errorFlag, null);
+  Services.console.logMessage(se);
 }
 
 function go(dir){
