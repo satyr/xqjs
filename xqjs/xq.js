@@ -3,10 +3,11 @@ Cu.import('resource://xqjs/Services.jsm');
 Cu.import('resource://xqjs/Preferences.jsm');
 Cu.import('resource://xqjs/coffee.jsm');
 
+var o2s = Object.prototype.toString;
 var utils =
-[function p(x) say(prettify(x)),
+[function p(x) say(inspect(x)),
  function say(s){
-   results.value = s + '\n' + results.value;
+   results.value = s +'\n'+ results.value;
    return s;
  },
  function log(s){
@@ -18,7 +19,8 @@ var utils =
          .getService(Ci.nsIClipboardHelper).copyString(s));
    return s;
  },
- function type(x) Object.prototype.toString.call(x).slice(8, -1),
+ function type(x) o2s.call(x).slice(8, -1),
+ function xmls(x) XMLSerializer().serializeToString(x),
  function main() Services.wm.getMostRecentWindow('navigator:browser'),
  function domi(x)(
    main()[x && x.nodeType ? 'inspectDOMNode' : 'inspectObject'](x), x),
@@ -164,25 +166,29 @@ function save(s){
   return s;
 }
 
-function prettify(x){
-  switch(typeof x){
+function inspect(x){
+  if(x == null) return String(x);
+  var t = typeof x;
+  switch(t){
+    case 'object': break;
+    case 'string': return x;
     case 'function': return x.toSource(0);
-    case 'xml': return x.toXMLString();
-    case 'object':
-    try {
-      var ps = uneval(x).replace(/^(?:\({}\)|null)$/, '');
-    } catch([]){
-      ps = JSON.stringify(x);
-    }
+    case 'xml': x = x.toXMLString();
+    default: return x +'  '+ t;
   }
-  var r = String(x);
-  if(ps && r !== ps) r += ' '+ ps;
-  return r;
+  t = o2s.call(x);
+  var s, nt = x.nodeType;
+  if(nt === 1) s = xmls(x.cloneNode(0)).replace(/ xmlns=".+?"/, '');
+  else if(nt) s = x.nodeValue;
+  if(s == null && (s = String(x)) === t)
+    s = '{'+ [k for(k in new Iterator(x, true))].join(', ') +'}';
+  return s +'  '+ t.slice(8, -1);
 }
 function fmtitle(win){
   var {location: {href}, document: {title}} = win;
   var r = '<'+ ellipsize(href.replace(/^http:\/+(?:www\.)?/, ''), 40) +'>';
-  if((title = title.trim())) r = ellipsize(title, 32, true) +' '+ r;
+  if((title = title.trim()))
+    r = ellipsize(title, 79 - r.length, true) +' '+ r;
   return r;
 }
 function ellipsize(str, num, end){
