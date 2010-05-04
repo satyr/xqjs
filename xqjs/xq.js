@@ -33,7 +33,7 @@ var utils =
 for each(let f in utils) this[f.name] = f;
 
 function onload(){
-  target(opener || this);
+  target((this.arguments || 0)[0] || opener || this);
   for each(let lm in qsa('textbox, checkbox')) self[lm.id] = lm;
   this.bin =
     JSON.parse(Preferences.get('extensions.xqjs.history', '[]')).reverse();
@@ -89,7 +89,7 @@ function evaluate(js){
 }
 function target(win){
   target.win = win;
-  document.title = win === self ? 'xqjs' : 'xqjs: '+ fmtitle(win);
+  document.title = 'xqjs'+ (win === self ? '' : ': '+ fmtitle(win));
 }
 function macload(){
   try {
@@ -113,6 +113,7 @@ function options(){
   showModalDialog('xqo.xul', 1, 'resizable=1');
   macload();
 }
+function reload() opener ? opener.xqjs(target.win) : location.reload();
 
 function expand(s){
   if(!s) return '';

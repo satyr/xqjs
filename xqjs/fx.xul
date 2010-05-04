@@ -8,6 +8,7 @@
    oncommand="xqjs()" insertbefore="sanitizeSeparator"/>
  </menupopup>
  <script>
-  function xqjs() openDialog('chrome://xqjs/content','xqjs','resizable');
+  function xqjs(win)
+    this.openDialog('chrome://xqjs/content', 'xqjs', 'resizable', win);
  </script>
 </overlay>

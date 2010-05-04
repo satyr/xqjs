@@ -10,7 +10,7 @@
   <key id="keyCopyCode" key="C" modifiers="accel,shift"
    label="Copy Code" oncommand="copand()"/>
   <key id="keyReload" key="R" modifiers="accel"
-   label="Reload" oncommand="location.reload()"/>
+   label="Reload" oncommand="reload()"/>
   <key id="keyClose" keycode="VK_ESCAPE"
    label="Close" oncommand="close()"/>
  </keyset>
