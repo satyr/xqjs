@@ -29,6 +29,23 @@ var utils =
    if(Firebug.Console.isEnabled() && Firebug.toggleBar(true, 'console'))
      Firebug.Console.logFormatted(Array.slice(arguments));
    return x;
+ },
+ function xpath(xp, doc, one){
+   if(typeof doc !== 'object') one = doc, doc = 0;
+   doc = doc || target.win.document;
+   var ns = doc.documentElement.namespaceURI
+   var r = doc.evaluate(
+     xp, doc, function() ns, XPathResult.ANY_TYPE, null);
+   switch(r.resultType){
+     case XPathResult.STRING_TYPE : return r.stringValue;
+     case XPathResult.NUMBER_TYPE : return r.numberValue;
+     case XPathResult.BOOLEAN_TYPE: return r.booleanValue;
+     case XPathResult.UNORDERED_NODE_ITERATOR_TYPE:
+     if(one) return r.iterateNext();
+     let a = [], n;
+     while((n = r.iterateNext())) a.push(n);
+     return a;
+   }
  }];
 for each(let f in utils) this[f.name] = f;
 
