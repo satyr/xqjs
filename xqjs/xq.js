@@ -1,6 +1,3 @@
-const {classes: Cc, interfaces: Ci, utils: Cu, results: Cr} = Components;
-Cu.import('resource://xqjs/Services.jsm');
-Cu.import('resource://xqjs/Preferences.jsm');
 Cu.import('resource://xqjs/coffee.jsm');
 
 var o2s = Object.prototype.toString;
@@ -53,12 +50,11 @@ function onload(){
   target((this.arguments || 0)[0] || opener || this);
   for each(let lm in qsa('textbox, checkbox')) self[lm.id] = lm;
   this.bin =
-    JSON.parse(Preferences.get('extensions.xqjs.history', '[]')).reverse();
+    JSON.parse(prefs.get('history', '[]')).reverse();
   this.pos = 0;
   macload();
-  macros.checked = Preferences.get('extensions.xqjs.macros.on');
-  coffee.checked = Preferences.get('extensions.xqjs.coffee.on');
-  code.onkeydown = keydown;
+  macros.checked = prefs.get('macros.on');
+  coffee.checked = prefs.get('coffee.on');
   code.focus();
   for each(let menu in qsa('#Chrome, #Content'))
     menu.appendChild(lmn('menupopup', {
@@ -67,24 +63,21 @@ function onload(){
       onpopuphidden: 'empty(this)',
     }));
   var apop = qs('#Actions').appendChild(lmn('menupopup'));
-  for each(let key in qsa('key'))
+  for each(let key in qsa('key')){
+    let {id} = key, json = prefs.get(id), atrs;
+    try { atrs = JSON.parse(json) } catch(e){
+      Cu.reportError(SyntaxError(
+        'failed to parse '+ id +'\n'+ json, e.fileName, e.lineNumber));
+      prefs.reset(id);
+      atrs = JSON.parse(prefs.get(id));
+    }
+    for(let k in atrs) key.setAttribute(k, atrs[k]);
     apop.appendChild(lmn('menuitem', {
       key: key.id,
       label: key.getAttribute('label'),
       oncommand: key.getAttribute('oncommand'),
     }));
-}
-
-function qs(s) document.querySelector(s);
-function qsa(s) Array.slice(document.querySelectorAll(s));
-function lmn(name, atrs){
-  var lm = document.createElement(name);
-  for(let key in atrs) lm.setAttribute(key, atrs[key]);
-  return lm;
-}
-function empty(lm){
-  while(lm.hasChildNodes()) lm.removeChild(lm.lastChild);
-  return lm;
+  }
 }
 
 function execute(){
@@ -111,7 +104,7 @@ function target(win){
 function macload(){
   try {
     var m = Cu.evalInSandbox(
-      Preferences.get('extensions.xqjs.macros', ''),
+      prefs.get('macros', ''),
       Cu.Sandbox('about:blank'), 1.8);
   } catch(e){ Cu.reportError(e) }
   if(!m) m = String;
@@ -250,26 +243,14 @@ function fillwin(menu){
   }));
 }
 
-function keydown(ev){
-  if(!ev.ctrlKey) return;
-  switch(ev.keyCode){
-    case KeyEvent.DOM_VK_UP  : go(-1); break;
-    case KeyEvent.DOM_VK_DOWN: go(+1); break;
-    case KeyEvent.DOM_VK_RETURN: execute(); break;
-    default: return;
-  }
-  ev.preventDefault();
-  ev.stopPropagation();
-}
-
 function onunload(){
   save(code.value);
   bin.reverse();
-  var max = Preferences.get('extensions.xqjs.history.max');
+  var max = prefs.get('history.max');
   if(bin.length > max) bin.length = max;
-  Preferences.set({
-    'extensions.xqjs.history': JSON.stringify(bin),
-    'extensions.xqjs.macros.on': macros.checked,
-    'extensions.xqjs.coffee.on': coffee.checked,
+  prefs.set({
+    'history': JSON.stringify(bin),
+    'macros.on': macros.checked,
+    'coffee.on': coffee.checked,
   });
 }

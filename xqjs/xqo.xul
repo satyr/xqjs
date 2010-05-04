@@ -1,9 +1,17 @@
 <?xml-stylesheet href="chrome://global/skin"?>
 <dialog xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
- id="xqo" title="xqjs options" width="480" height="240"
+ id="xqo" title="xqjs options" width="600" height="500"
  persist="width,height,screenX,screenY"
  buttons="accept">
  <label control="macros" value="Macro" accesskey="M"/>
  <textbox id="macros" multiline="true" flex="1"/>
+ <groupbox>
+  <caption label="Keys"/>
+  <grid>
+   <columns><column/><column flex="1"/></columns>
+   <rows id="keys"/>
+  </grid>
+ </groupbox>
+ <script type="application/javascript;version=1.8" src="xqc.js"/>
  <script type="application/javascript;version=1.8" src="xqo.js"/>
 </dialog>

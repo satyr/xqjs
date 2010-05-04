@@ -1,6 +1,4 @@
-const {classes: Cc, interfaces: Ci, utils: Cu, results: Cr} = Components;
-Cu.import('resource://xqjs/Preferences.jsm');
-
+const PREF_ROOT = 'extensions.xqjs.';
 const DEFAULT_MACROS = String(<![CDATA[({
   '#(?=[({])': 'function f(x,y,z)',
   '#<<(\\w+)(.*)\\n([^]*?)\\n\\1': 'String(<![CDATA[$3]]\>)$2',
@@ -14,12 +12,25 @@ const DEFAULT_MACROS = String(<![CDATA[({
   },
 })]]>);
 
+{ let parent = qs('#keys'), i = 0;
+  for each(let pref in Services.prefs.getChildList(PREF_ROOT +'key', {})){
+    let id = pref.slice(PREF_ROOT.length);
+    let row = parent.appendChild(lmn('row', {align: 'baseline'}));
+    row.appendChild(lmn('label', {
+      value: ++i +' '+ id.slice(3), control: id, accesskey: i,
+    }));
+    row.appendChild(lmn('textbox', {
+      id: id, class: 'key', value: prefs.get(id),
+    }));
+  }
+}
+
 function onload(){
   document.getElementById('macros').value =
-    Preferences.get('extensions.xqjs.macros', '') || DEFAULT_MACROS;
+    prefs.get('macros', '') || DEFAULT_MACROS;
 }
 function onunload(){
-  Preferences.set(
-    'extensions.xqjs.macros',
-    document.getElementById('macros').value || DEFAULT_MACROS);
+  for each(let tb in qsa('.key')) prefs.set(tb.id, tb.value);
+  prefs.set(
+    'macros', document.getElementById('macros').value || DEFAULT_MACROS);
 }
