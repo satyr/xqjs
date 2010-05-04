@@ -47,6 +47,24 @@ var utils =
  }];
 for each(let f in utils) this[f.name] = f;
 
+{ let apop = qs('#Actions').appendChild(lmn('menupopup'));
+  for each(let key in qsa('key')){
+    let {id} = key, json = prefs.get(id), atrs;
+    try { atrs = JSON.parse(json) } catch(e){
+      Cu.reportError(SyntaxError(
+        'failed to parse '+ id +'\n'+ json, e.fileName, e.lineNumber));
+      prefs.reset(id);
+      atrs = JSON.parse(prefs.get(id));
+    }
+    for(let k in atrs) key.setAttribute(k, atrs[k]);
+    apop.appendChild(lmn('menuitem', {
+      key: key.id,
+      label: key.getAttribute('label'),
+      oncommand: key.getAttribute('oncommand'),
+    }));
+  }
+}
+
 function onload(){
   target((this.arguments || 0)[0] || opener || this);
   for each(let lm in qsa('textbox, checkbox')) self[lm.id] = lm;
@@ -63,22 +81,6 @@ function onload(){
       onpopupshowing: 'fillwin(this)',
       onpopuphidden: 'empty(this)',
     }));
-  var apop = qs('#Actions').appendChild(lmn('menupopup'));
-  for each(let key in qsa('key')){
-    let {id} = key, json = prefs.get(id), atrs;
-    try { atrs = JSON.parse(json) } catch(e){
-      Cu.reportError(SyntaxError(
-        'failed to parse '+ id +'\n'+ json, e.fileName, e.lineNumber));
-      prefs.reset(id);
-      atrs = JSON.parse(prefs.get(id));
-    }
-    for(let k in atrs) key.setAttribute(k, atrs[k]);
-    apop.appendChild(lmn('menuitem', {
-      key: key.id,
-      label: key.getAttribute('label'),
-      oncommand: key.getAttribute('oncommand'),
-    }));
-  }
 }
 
 function execute(){
