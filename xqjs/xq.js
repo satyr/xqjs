@@ -35,10 +35,10 @@ var utils =
    var ns = doc.documentElement.namespaceURI;
    var r = doc.evaluate(xp, doc, function() ns, XPathResult.ANY_TYPE, null);
    switch(r.resultType){
-     case XPathResult.STRING_TYPE : return r.stringValue;
-     case XPathResult.NUMBER_TYPE : return r.numberValue;
-     case XPathResult.BOOLEAN_TYPE: return r.booleanValue;
-     case XPathResult.UNORDERED_NODE_ITERATOR_TYPE:
+     case r.STRING_TYPE : return r.stringValue;
+     case r.NUMBER_TYPE : return r.numberValue;
+     case r.BOOLEAN_TYPE: return r.booleanValue;
+     case r.UNORDERED_NODE_ITERATOR_TYPE:
      if(one) return r.iterateNext();
      let a = [], n;
      while((n = r.iterateNext())) a.push(n);
@@ -72,19 +72,18 @@ for each(let f in utils) this[f.name] = f;
 function onload(){
   target((this.arguments || 0)[0] || opener || this);
   for each(let lm in qsa('textbox, checkbox')) self[lm.id] = lm;
-  this.bin =
-    JSON.parse(prefs.get('history', '[]')).reverse();
+  this.bin = JSON.parse(prefs.get('history', '[]')).reverse();
   this.pos = 0;
   macload();
   macros.checked = prefs.get('macros.on');
   coffee.checked = prefs.get('coffee.on');
-  code.focus();
   for each(let menu in qsa('#Chrome, #Content'))
     menu.appendChild(lmn('menupopup', {
       oncommand: 'target(event.target.win)',
       onpopupshowing: 'fillwin(this)',
       onpopuphidden: 'empty(this)',
     }));
+  code.focus();
 }
 
 function execute(){
@@ -108,9 +107,7 @@ function evaluate(js){
 }
 function macload(){
   try {
-    var m = Cu.evalInSandbox(
-      prefs.get('macros', ''),
-      Cu.Sandbox('about:blank'), 1.8);
+    var m = Cu.evalInSandbox(prefs.get('macros', ''), Cu.Sandbox(this), 1.8);
   } catch(e){ Cu.reportError(e) }
   if(!m) m = String;
   else if(typeof m !== 'function'){
@@ -132,31 +129,24 @@ function reload() opener ? opener.xqjs(target.win) : location.reload();
 
 function expand(s){
   if(!s) return '';
-  if(macros.checked){
-    try { s = macrun(s) }
-    catch(e){
-      Cu.reportError(e);
-      say(e);
-      return '';
-    }
+  if(macros.checked) try { s = macrun(s) } catch(e){
+    Cu.reportError(say(e));
+    return '';
   }
-  if(coffee.checked){
-    try { s = CoffeeScript.compile(s, {no_wrap: true}) }
-    catch(e){
-      if(/^Parse error on line (\d+).*\n/.test(e.message))
-        cofferr(
-          s, 'ParseError: token position = '+ RegExp.rightContext, RegExp.$1);
-      else if(/^(SyntaxError.+) on line (\d+)/.test(e.message))
-        cofferr(s, RegExp.$1, RegExp.$2);
-      else Cu.reportError(p(e));
-      return '';
-    }
+  if(coffee.checked) try {
+    s = CoffeeScript.compile(s, {no_wrap: true});
+  } catch(e){
+    if(/^Parse error on line (\d+).*\n/.test(e.message))
+      cofferr(s, 'ParseError: token position = '+ RegExp["$'"], RegExp.$1);
+    else if(/^(SyntaxError.+) on line (\d+)/.test(e.message))
+      cofferr(s, RegExp.$1, RegExp.$2);
+    else Cu.reportError(p(e));
+    return '';
   }
   return s;
 }
 function cofferr(src, msg, lno, cno){
-  let se = (Cc['@mozilla.org/scripterror;1']
-            .createInstance(Ci.nsIScriptError));
+  let se = Cc['@mozilla.org/scripterror;1'].createInstance(Ci.nsIScriptError);
   se.init(say('Coffee'+ msg), 'data:;charset=utf-8,'+ encodeURI(src),
           src.split(/\r?\n/, lno).pop(), lno, cno, se.errorFlag, null);
   Services.console.logMessage(se);
@@ -211,16 +201,12 @@ function inspect(x){
   return s +'  '+ t;
 }
 function fmtitle(win){
-  const LEN = 72;
+  const LEN = 80;
   var ttl = win.document.title.trim();
-  var url = win.location.href.replace(/^http:\/+(?:www\.)?/, '');
+  var url = win.location.href.replace(/^http:\/+/, '');
   if(!ttl) return ellipsize(url, LEN);
-  var over = (ttl.length + url.length - LEN) >> 1;
-  if(over > 0){
-    ttl = ellipsize(ttl, ttl.length - over, true);
-    url = ellipsize(url, url.length - over);
-  }
-  return ttl + ' <'+ url +'>';
+  ttl = ellipsize(ttl, LEN/2, true);
+  return ttl + ' <'+ ellipsize(url, LEN - ttl.length) +'>';
 }
 function ellipsize(str, num, end){
   if(num < 1) return '';

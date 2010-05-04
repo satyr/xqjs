@@ -1,7 +1,7 @@
 const PREF_ROOT = 'extensions.xqjs.';
 const DEFAULT_MACROS = String(<![CDATA[({
   '#(?=[({])': 'function f(x,y,z)',
-  '#<<(\\w+)(.*)\\n([^]*?)\\n\\1': 'String(<![CDATA[$3]]\>)$2',
+  '#<<(\\w+)(.*)\\n([^]*?)\\n\\1\\b': 'String(<![CDATA[$3]]\>)$2',
   "#[axX]?('.*?')": function selector($, q){
     switch($[1]){
       case 'a': return 'Array.slice(document.querySelectorAll('+ q +'))';
@@ -26,11 +26,9 @@ const DEFAULT_MACROS = String(<![CDATA[({
 }
 
 function onload(){
-  document.getElementById('macros').value =
-    prefs.get('macros', '') || DEFAULT_MACROS;
+  qs('#macros').value = prefs.get('macros', '') || DEFAULT_MACROS;
 }
 function onunload(){
   for each(let tb in qsa('.key')) prefs.set(tb.id, tb.value);
-  prefs.set(
-    'macros', document.getElementById('macros').value || DEFAULT_MACROS);
+  prefs.set('macros', qs('#macros').value || DEFAULT_MACROS);
 }
