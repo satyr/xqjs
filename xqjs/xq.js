@@ -16,7 +16,8 @@ var utils =
          .getService(Ci.nsIClipboardHelper).copyString(s));
    return s;
  },
- function type(x) o2s.call(x).slice(8, -1),
+ function type(x) x == null ? '' : o2s.call(x).slice(8, -1),
+ function keys(x) [k for(k in new Iterator(x, true))],
  function xmls(x) XMLSerializer().serializeToString(x),
  function main() Services.wm.getMostRecentWindow('navigator:browser'),
  function domi(x)(
@@ -187,20 +188,35 @@ function inspect(x){
     case 'xml': x = x.toXMLString();
     default: return x +'  '+ t;
   }
-  t = o2s.call(x);
+  var os = o2s.call(x), t = os.slice(8, -1);
+  switch(t){
+    case 'XPCNativeWrapper':
+    let wos = o2s.call(x.wrappedJSObject);
+    os = '[object '+ t +' '+ wos +']';
+    t += ':'+ wos.slice(8, -1);
+    break;
+    case 'XPCCrossOriginWrapper':
+    let ot = String(x.constructor).slice(8, -1);
+    os = '[object '+ ot +']';
+    t += ':'+ ot;
+  }
   var s, nt = x.nodeType;
   if(nt === 1) s = xmls(x.cloneNode(0)).replace(/ xmlns=".+?"/, '');
   else if(nt) s = x.nodeValue;
-  if(s == null && (s = String(x)) === t)
-    s = '{'+ [k for(k in new Iterator(x, true))].join(', ') +'}';
-  return s +'  '+ t.slice(8, -1);
+  if(s == null && (s = String(x)) === os) s = '{'+ keys(x).join(', ') +'}';
+  return s +'  '+ t;
 }
 function fmtitle(win){
-  var {location: {href}, document: {title}} = win;
-  var r = '<'+ ellipsize(href.replace(/^http:\/+(?:www\.)?/, ''), 40) +'>';
-  if((title = title.trim()))
-    r = ellipsize(title, 79 - r.length, true) +' '+ r;
-  return r;
+  const LEN = 72;
+  var ttl = win.document.title.trim();
+  var url = win.location.href.replace(/^http:\/+(?:www\.)?/, '');
+  if(!ttl) return ellipsize(url, LEN);
+  var over = (ttl.length + url.length - LEN) >> 1;
+  if(over > 0){
+    ttl = ellipsize(ttl, ttl.length - over, true);
+    url = ellipsize(url, url.length - over);
+  }
+  return ttl + ' <'+ url +'>';
 }
 function ellipsize(str, num, end){
   if(num < 1) return '';
