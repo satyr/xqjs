@@ -1,5 +1,7 @@
 Cu.import('resource://xqjs/coffee.jsm');
 
+function main() Services.wm.getMostRecentWindow('navigator:browser');
+
 var o2s = Object.prototype.toString;
 var utils =
 [function p(x) say(inspect(x)),
@@ -19,7 +21,6 @@ var utils =
  function type(x) x == null ? '' : o2s.call(x).slice(8, -1),
  function keys(x) [k for(k in new Iterator(x, true))],
  function xmls(x) XMLSerializer().serializeToString(x),
- function main() Services.wm.getMostRecentWindow('navigator:browser'),
  function domi(x)(
    main()[x && x.nodeType ? 'inspectDOMNode' : 'inspectObject'](x), x),
  function fbug(x){
@@ -31,9 +32,8 @@ var utils =
  function xpath(xp, doc, one){
    if(typeof doc !== 'object') one = doc, doc = 0;
    doc = doc || target.win.document;
-   var ns = doc.documentElement.namespaceURI
-   var r = doc.evaluate(
-     xp, doc, function() ns, XPathResult.ANY_TYPE, null);
+   var ns = doc.documentElement.namespaceURI;
+   var r = doc.evaluate(xp, doc, function() ns, XPathResult.ANY_TYPE, null);
    switch(r.resultType){
      case XPathResult.STRING_TYPE : return r.stringValue;
      case XPathResult.NUMBER_TYPE : return r.numberValue;
@@ -44,6 +44,10 @@ var utils =
      while((n = r.iterateNext())) a.push(n);
      return a;
    }
+ },
+ function target(win){
+   target.win = win;
+   return document.title = 'xqjs'+ (win === self ? '' : ': '+ fmtitle(win));
  }];
 for each(let f in utils) this[f.name] = f;
 
@@ -92,17 +96,15 @@ function execute(){
   }
 }
 function evaluate(js){
-  var {win} = target, sb = Cu.Sandbox(win);
+  var {win} = target, rwin = win.wrappedJSObject || win, sb = Cu.Sandbox(rwin);
   for each(let f in utils) sb[f.name] = f;
   sb.__defineGetter__('main', main);
-  sb.__win__ = win.wrappedJSObject || win;
+  sb.win = rwin;
   return Cu.evalInSandbox(
-    'with(__win__){\n'+ js +'\n}',
-    sb, 1.8, 'data:;charset=utf-8,'+ encodeURI(js));
-}
-function target(win){
-  target.win = win;
-  document.title = 'xqjs'+ (win === self ? '' : ': '+ fmtitle(win));
+    (win.location.protocol === 'chrome:'
+     ? 'with(win)(function()eval('+ uneval(js) +'))()'
+     : (sb.__proto__ = rwin, js)),
+    sb, 1.8, 'data:xqjs;charset=utf-8,'+ encodeURI(js));
 }
 function macload(){
   try {
