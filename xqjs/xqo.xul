@@ -6,7 +6,10 @@
  <label control="macros" value="Macro" accesskey="M"/>
  <textbox id="macros" multiline="true" flex="1"/>
  <groupbox>
-  <caption label="Keys"/>
+  <caption><label value="Keys" class="text-link"
+   tooltiptext="https://developer.mozilla.org/en/XUL/key"
+   onclick="if(event.button!==2)return!hurl(this.tooltipText)"
+   /></caption>
   <grid>
    <columns><column/><column flex="1"/></columns>
    <rows id="keys"/>

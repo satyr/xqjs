@@ -1,7 +1,5 @@
 Cu.import('resource://xqjs/coffee.jsm');
 
-function main() Services.wm.getMostRecentWindow('navigator:browser');
-
 var o2s = Object.prototype.toString;
 var utils =
 [function p(x) say(inspect(x)),
@@ -49,6 +47,7 @@ var utils =
    target.win = win;
    return document.title = 'xqjs'+ (win === self ? '' : ': '+ fmtitle(win));
  }];
+utils.push(hurl);
 for each(let f in utils) this[f.name] = f;
 
 { let apop = qs('#Actions').appendChild(lmn('menupopup'));
@@ -251,9 +250,7 @@ function fillwin(menu){
 
 function onunload(){
   save(code.value);
-  bin.reverse();
-  var max = prefs.get('history.max');
-  if(bin.length > max) bin.length = max;
+  bin.reverse().length = Math.min(bin.length, prefs.get('history.max'));
   prefs.set({
     'history': JSON.stringify(bin),
     'macros.on': macros.checked,

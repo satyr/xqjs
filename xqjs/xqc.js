@@ -15,3 +15,5 @@ function empty(lm){
   while(lm.hasChildNodes()) lm.removeChild(lm.lastChild);
   return lm;
 }
+function main() Services.wm.getMostRecentWindow('navigator:browser');
+function hurl() let(b = main().gBrowser) b.addTab.apply(b, arguments);
