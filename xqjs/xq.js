@@ -1,8 +1,9 @@
 Cu.import('resource://xqjs/coffee.jsm');
 
+var __ = [];
 var o2s = Object.prototype.toString;
 var utils =
-[function p(x) say(inspect(x)),
+[function p(x)(say(inspect(x)), x),
  function say(s){
    results.value = s +'\n'+ results.value;
    return s;
@@ -88,15 +89,16 @@ function onload(){
 function execute(){
   code.focus();
   var js = expand(save(code.value));
-  if(js) try { return p(evaluate(js)) } catch(e){
-    Cu.reportError(e);
-    return say(e);
-  }
+  if(js) try { var r = p(evaluate(js)) } catch(e){ Cu.reportError(r = say(e)) }
+  __.unshift(r);
+  return r;
 }
 function evaluate(js){
   var {win} = target, rwin = win.wrappedJSObject || win, sb = Cu.Sandbox(rwin);
   for each(let f in utils) sb[f.name] = f;
   sb.__defineGetter__('main', main);
+  sb.__ = __;
+  sb._ = __[0];
   sb.win = rwin;
   return Cu.evalInSandbox(
     (win.location.protocol === 'chrome:'
