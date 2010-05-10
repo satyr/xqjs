@@ -8,6 +8,7 @@
   <key id="keyExecute" label="Execute" oncommand="execute()"/>
   <key id="keyHistoryBack" label="History Back" oncommand="go(-1)"/>
   <key id="keyHistoryForward" label="History Forward" oncommand="go(+1)"/>
+  <key id="keyComplete" label="Complete" oncommand="complete()"/>
   <key id="keyCopyCode" label="Copy Code" oncommand="copand()"/>
   <key id="keyOptions" label="Options" oncommand="options()"/>
   <key id="keyReload" label="Reload" oncommand="reload()"/>

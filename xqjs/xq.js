@@ -5,7 +5,7 @@ var o2s = Object.prototype.toString;
 var utils =
 [function p(x)(say(inspect(x)), x),
  function say(s)(results.value = s +'\n'+ results.value, s),
- function log(s)(Services.console.logStringMessage(s), s),
+ function log(s)(Services.console.logStringMessage('xqjs: '+ s), s),
  function copy(s)(
    s && (Cc['@mozilla.org/widget/clipboardhelper;1']
          .getService(Ci.nsIClipboardHelper).copyString(s)),
@@ -19,11 +19,11 @@ var utils =
  function xmls(x) XMLSerializer().serializeToString(x),
  function domi(x)(
    main()[x && x.nodeType ? 'inspectDOMNode' : 'inspectObject'](x), x),
- function fbug(x){
-   var {Firebug} = main();
+ function fbug(){
+   var {Firebug} = main(), args = Array.slice(arguments);
    if(Firebug.Console.isEnabled() && Firebug.toggleBar(true, 'console'))
-     Firebug.Console.logFormatted(Array.slice(arguments));
-   return x;
+     Firebug.Console.logFormatted(args);
+   return args;
  },
  function xpath(xp, doc, one){
    if(typeof doc !== 'object') one = doc, doc = 0;
@@ -50,7 +50,7 @@ for each(let f in utils) this[f.name] = f;
 
 { let apop = qs('#Actions').appendChild(lmn('menupopup'));
   for each(let key in qsa('key')){
-    let {id} = key, json = prefs.get(id), atrs;
+    let {id} = key, json = prefs.get(id, '{}'), atrs;
     try { atrs = JSON.parse(json) } catch(e){
       Cu.reportError(SyntaxError(
         'failed to parse '+ id +'\n'+ json, e.fileName, e.lineNumber));
@@ -69,7 +69,7 @@ for each(let f in utils) this[f.name] = f;
 function onload(){
   target((this.arguments || 0)[0] || opener || this);
   for each(let lm in qsa('textbox, checkbox')) self[lm.id] = lm;
-  this.bin = JSON.parse(prefs.get('history', '[]')).reverse();
+  this.bin = JSON.parse(prefs.get('history', '[]'));
   this.pos = 0;
   macload();
   macros.checked = prefs.get('macros.on');
@@ -86,12 +86,14 @@ function onload(){
 function execute(){
   code.focus();
   var js = expand(save(code.value));
-  if(js) try { var r = p(evaluate(js)) } catch(e){ Cu.reportError(r = say(e)) }
-  __.unshift(r);
+  if(js){
+    try { var r = p(evaluate(js)) } catch(e){ Cu.reportError(r = say(e)) }
+    __.unshift(r);
+  }
   return r;
 }
 function evaluate(js){
-  var {win} = target, rwin = win.wrappedJSObject || win, sb = Cu.Sandbox(rwin);
+  var {win} = target, rwin = unwrap(win), sb = Cu.Sandbox(rwin);
   for each(let f in utils) sb[f.name] = f;
   sb.__defineGetter__('main', main);
   sb.__ = __;
@@ -153,21 +155,46 @@ function cofferr(src, msg, lno, cno){
 function go(dir){
   if((pos -= dir) < 1){
     if(save(code.value)) code.value = '';
-    pos = 0;
-    return;
+    return pos = 0;
   }
-  if(bin.length < pos){
-    pos = bin.length;
-    return;
-  }
-  code.value = bin[bin.length - pos] +'\n';
+  if(bin.length < pos) return pos = bin.length;
+  code.value = bin[pos - 1];
+  return pos;
 }
 function save(s){
-  if(!(s = s.trim())) return '';
-  var i = bin.lastIndexOf(s);
+  if(!s) return s;
+  var i = bin.indexOf(s);
   if(~i) bin.splice(i, 1);
-  bin.push(s);
+  bin.unshift(s);
   return s;
+}
+
+function complete(){
+  var pos = code.selectionStart, abr = /[\w$]*$/(code.value.slice(0, pos))[0];
+  if(!abr) return;
+  if(pos === complete.pos && ~abr.lastIndexOf(complete.abr, 0)){
+    pos -= abr.length - complete.abr.length;
+    var {gen, abr} = complete;
+  }
+  gen = gen || wordig();
+  try { for(;;){
+    let word = gen.next();
+    if(!~word.lastIndexOf(abr, 0)) continue;
+    code.selectionStart = pos;
+    code.editor.QueryInterface(Ci.nsIPlaintextEditor)
+      .insertText(word.slice(abr.length));
+    complete.pos = code.selectionStart;
+    complete.gen = gen;
+    complete.abr = abr;
+    break;
+  }} catch(e if e === StopIteration){ complete.gen = null };
+}
+function wordig(){
+  var re = /[\w$]{3,}/g, dic = {__proto__: null}, word;
+  for(var s in new function(){
+    yield results.value;
+    for each(var s in bin) yield s;
+  }) while([word] = re(s) || 0) word in dic || (yield dic[word] = word);
 }
 
 function inspect(x){
@@ -237,15 +264,13 @@ function fillwin(menu){
     menu.appendChild(mi).win = win;
   }
 
-  menu.hasChildNodes() || menu.appendChild(lmn('menuitem', {
-    label: '-',
-    disabled: true,
-  }));
+  menu.hasChildNodes() ||
+    menu.appendChild(lmn('menuitem', {label: '-', disabled: true}));
 }
 
 function onunload(){
   save(code.value);
-  bin.reverse().length = Math.min(bin.length, prefs.get('history.max'));
+  bin.length = Math.min(bin.length, prefs.get('history.max'));
   prefs.set({
     'history': JSON.stringify(bin),
     'macros.on': macros.checked,
