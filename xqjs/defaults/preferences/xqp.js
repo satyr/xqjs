@@ -4,7 +4,7 @@ pref('extensions.xqjs.coffee.on', false);
 pref('extensions.xqjs.history', '[]');
 pref('extensions.xqjs.history.max', 999);
 pref('extensions.xqjs.keyOpen',
-     '{"key":"X", "modifiers":"alt"}');
+     '{"key":"X", "modifiers":"shift,any,alt"}');
 pref('extensions.xqjs.keyExecute',
      '{"keycode":"VK_RETURN", "modifiers":"accel"}');
 pref('extensions.xqjs.keyHistoryBack',

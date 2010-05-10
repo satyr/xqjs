@@ -2,13 +2,17 @@ addEventListener('DOMContentLoaded', function xqjsInit(ev){
   for each(let id in ['mi_xqjs', 'key_xqjs']){
     var lm = document.getElementById(id);
     lm.setAttribute('label', 'xqjs');
-    lm.setAttribute('oncommand', 'xqjs()');
+    lm.setAttribute('oncommand', 'xqjs(event.shiftKey && content)');
   }
-  try {
-    let {data} = gPrefService.getComplexValue(
-      'extensions.xqjs.keyOpen', Ci.nsISupportsString);
-    for(let [k, v] in new Iterator(JSON.parse(data))) lm.setAttribute(k, v);
-  } catch(e){ Cu.reportError(e) }
+  var pkey = 'extensions.xqjs.keyOpen', i = 2;
+  do try {
+    var atrs = JSON.parse(
+      gPrefService.getComplexValue(pkey, Ci.nsISupportsString).data);
+  } catch(e){
+    Cu.reportError(e);
+    gPrefService.clearUserPref(pkey);
+  } while(!atrs && --i);
+  for(let [k, v] in new Iterator(atrs)) lm.setAttribute(k, v);
 }, false);
 
 function xqjs(win){
