@@ -10,3 +10,16 @@ is a simple JavaScript console for [Firefox](http://firefox.com) that:
     - an object of regexp:replacement pairs (see default setting).
     - a function that performs arbitrary string conversion.
   - [CoffeeScript](http://jashkenas.github.com/coffee-script/).
+- has minimal capabilities of history conservation,
+  [word completion](http://www.emacswiki.org/emacs/DynamicAbbreviations)
+  and [key](https://developer.mozilla.org/en/XUL/key)
+  [customization](http://www.json.org).
+
+
+##tips
+
+###execution
+- `__` keeps last results. `_` equals `__[0]`.
+
+###invocation
+- Hold _shift_ to target the current page by default.
