@@ -4,21 +4,18 @@ var __ = [];
 var o2s = Object.prototype.toString;
 var utils =
 [function p(x)(say(inspect(x)), x),
- function say(s){
-   results.value = s +'\n'+ results.value;
-   return s;
- },
- function log(s){
-   Services.console.logStringMessage(s);
-   return s;
- },
- function copy(s){
+ function say(s)(results.value = s +'\n'+ results.value, s),
+ function log(s)(Services.console.logStringMessage(s), s),
+ function copy(s)(
    s && (Cc['@mozilla.org/widget/clipboardhelper;1']
-         .getService(Ci.nsIClipboardHelper).copyString(s));
-   return s;
- },
+         .getService(Ci.nsIClipboardHelper).copyString(s)),
+   s),
  function type(x) x == null ? '' : o2s.call(x).slice(8, -1),
- function keys(x) [k for(k in new Iterator(x, true))],
+ function keys(x) [k for(k in x && new Iterator(x, true))],
+ function unwrap(x){
+   try { return XPCNativeWrapper(x).wrappedJSObject || x }
+   catch([]){ return x }
+ },
  function xmls(x) XMLSerializer().serializeToString(x),
  function domi(x)(
    main()[x && x.nodeType ? 'inspectDOMNode' : 'inspectObject'](x), x),
@@ -44,10 +41,10 @@ var utils =
      return a;
    }
  },
- function target(win){
-   target.win = win;
-   return document.title = 'xqjs'+ (win === self ? '' : ': '+ fmtitle(win));
- }];
+ function target(win)(
+   target.win = win,
+   document.title = 'xqjs'+ (win === self ? '' : ': '+ fmtitle(win))),
+ ];
 utils.push(hurl);
 for each(let f in utils) this[f.name] = f;
 
@@ -148,7 +145,7 @@ function expand(s){
 }
 function cofferr(src, msg, lno, cno){
   let se = Cc['@mozilla.org/scripterror;1'].createInstance(Ci.nsIScriptError);
-  se.init(say('Coffee'+ msg), 'data:;charset=utf-8,'+ encodeURI(src),
+  se.init(say('Coffee'+ msg), 'data:coffee;charset=utf-8,'+ encodeURI(src),
           src.split(/\r?\n/, lno).pop(), lno, cno, se.errorFlag, null);
   Services.console.logMessage(se);
 }
@@ -166,7 +163,7 @@ function go(dir){
   code.value = bin[bin.length - pos] +'\n';
 }
 function save(s){
-  if(!(s = s.trim())) return "";
+  if(!(s = s.trim())) return '';
   var i = bin.lastIndexOf(s);
   if(~i) bin.splice(i, 1);
   bin.push(s);
@@ -185,20 +182,16 @@ function inspect(x){
   }
   var os = o2s.call(x), t = os.slice(8, -1);
   switch(t){
-    case 'XPCNativeWrapper':
-    let wos = o2s.call(x.wrappedJSObject);
-    os = '[object '+ t +' '+ wos +']';
+    case 'XPCNativeWrapper': case 'XPCCrossOriginWrapper':
+    let wos = o2s.call(unwrap(x));
+    os = t[3] === 'N' ? '[object '+ t +' '+ wos +']' : wos;
     t += ':'+ wos.slice(8, -1);
-    break;
-    case 'XPCCrossOriginWrapper':
-    let ot = String(x.constructor).slice(8, -1);
-    os = '[object '+ ot +']';
-    t += ':'+ ot;
   }
   var s, nt = x.nodeType;
   if(nt === 1) s = xmls(x.cloneNode(0)).replace(/ xmlns=".+?"/, '');
   else if(nt) s = x.nodeValue;
-  if(s == null && (s = String(x)) === os) s = '{'+ keys(x).join(', ') +'}';
+  if(s == null && (s = String(x)) === os)
+    s = '{'+ keys(unwrap(x)).join(', ') +'}';
   return s +'  '+ t;
 }
 function fmtitle(win){
