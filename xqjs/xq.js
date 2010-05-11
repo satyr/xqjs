@@ -96,9 +96,13 @@ function evaluate(js){
   var {win} = target, rwin = unwrap(win), sb = Cu.Sandbox(rwin);
   for each(let f in utils) sb[f.name] = f;
   sb.__defineGetter__('main', main);
+  sb.win = rwin;
   sb.__ = __;
   sb._ = __[0];
-  sb.win = rwin;
+  sb.Number.prototype.__iterator__ = function numit(){
+    if(this < 0) for(var i = -this; --i >= 0;) yield i;
+    else for(i = -1; ++i < this;) yield i;
+  };
   return Cu.evalInSandbox(
     (win.location.protocol === 'chrome:'
      ? 'with(win)(function()eval('+ uneval(js) +'))()'
