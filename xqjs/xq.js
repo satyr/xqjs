@@ -1,29 +1,28 @@
 Cu.import('resource://xqjs/coffee.jsm');
+const O2S = Object.prototype.toString;
 
 var __ = [];
-var o2s = Object.prototype.toString;
 var utils =
 [function p(x)(say(inspect(x)), x),
- function say(s)(results.value = s +'\n'+ results.value, s),
+ function say(s){
+   var {editor} = results;
+   editor.beginningOfDocument();
+   editor.QueryInterface(Ci.nsIPlaintextEditor).insertText(s +'\n');
+   editor.beginningOfDocument();
+   results.inputField.scrollTop = 0
+   return s;
+ },
  function log(s)(Services.console.logStringMessage('xqjs: '+ s), s),
  function copy(s)(
    s && (Cc['@mozilla.org/widget/clipboardhelper;1']
          .getService(Ci.nsIClipboardHelper).copyString(s)),
    s),
- function type(x) x == null ? '' : o2s.call(x).slice(8, -1),
+ function type(x) x == null ? '' : O2S.call(x).slice(8, -1),
  function keys(x) [k for(k in x && new Iterator(x, true))],
+ function xmls(x) XMLSerializer().serializeToString(x),
  function unwrap(x){
    try { return XPCNativeWrapper(x).wrappedJSObject || x }
    catch([]){ return x }
- },
- function xmls(x) XMLSerializer().serializeToString(x),
- function domi(x)(
-   main()[x && x.nodeType ? 'inspectDOMNode' : 'inspectObject'](x), x),
- function fbug(){
-   var {Firebug} = main(), args = Array.slice(arguments);
-   if(Firebug.Console.isEnabled() && Firebug.toggleBar(true, 'console'))
-     Firebug.Console.logFormatted(args);
-   return args;
  },
  function xpath(xp, doc, one){
    if(typeof doc !== 'object') one = doc, doc = 0;
@@ -41,12 +40,20 @@ var utils =
      return a;
    }
  },
+ function domi(x)(
+   main()[x && x.nodeType ? 'inspectDOMNode' : 'inspectObject'](x), x),
+ function fbug(){
+   var {Firebug} = main(), args = Array.slice(arguments);
+   if(Firebug.Console.isEnabled() && Firebug.toggleBar(true, 'console'))
+     Firebug.Console.logFormatted(args);
+   return args;
+ },
  function target(win)(
    target.win = win,
    document.title = 'xqjs'+ (win === self ? '' : ': '+ fmtitle(win))),
  ];
-utils.push(hurl);
 for each(let f in utils) this[f.name] = f;
+utils.push(hurl);
 
 { let apop = qs('#Actions').appendChild(lmn('menupopup'));
   for each(let key in qsa('key')){
@@ -68,7 +75,7 @@ for each(let f in utils) this[f.name] = f;
 
 function onload(){
   target((this.arguments || 0)[0] || opener || this);
-  for each(let lm in qsa('textbox, checkbox')) self[lm.id] = lm;
+  for each(let lm in qsa('textbox, checkbox')) this[lm.id] = lm;
   this.bin = JSON.parse(prefs.get('history', '[]'));
   this.pos = 0;
   macload();
@@ -211,10 +218,10 @@ function inspect(x){
     case 'xml': x = x.toXMLString();
     default: return x +'  '+ t;
   }
-  var os = o2s.call(x), t = os.slice(8, -1);
+  var os = O2S.call(x), t = os.slice(8, -1);
   switch(t){
     case 'XPCNativeWrapper': case 'XPCCrossOriginWrapper':
-    let wos = o2s.call(unwrap(x));
+    let wos = O2S.call(unwrap(x));
     os = t[3] === 'N' ? '[object '+ t +' '+ wos +']' : wos;
     t += ':'+ wos.slice(8, -1);
   }
