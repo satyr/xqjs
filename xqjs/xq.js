@@ -50,6 +50,7 @@ var utils =
  },
  function target(win)(
    target.win = win,
+   target.chrome = chromep(win),
    document.title = 'xqjs'+ (win === self ? '' : ': '+ fmtitle(win))),
  ];
 for each(let f in utils) this[f.name] = f;
@@ -100,10 +101,10 @@ function execute(){
   return r;
 }
 function evaluate(js){
-  var {win} = target, rwin = unwrap(win), sb = Cu.Sandbox(rwin);
+  var {win} = target, barewin = unwrap(win), sb = Cu.Sandbox(barewin);
   for each(let f in utils) sb[f.name] = f;
   sb.__defineGetter__('main', main);
-  sb.win = rwin;
+  sb.win = barewin;
   sb.__ = __;
   sb._ = __[0];
   sb.Number.prototype.__iterator__ = function numit(){
@@ -111,9 +112,9 @@ function evaluate(js){
     else for(i = -1; ++i < this;) yield i;
   };
   return Cu.evalInSandbox(
-    (win.location.protocol === 'chrome:'
+    (target.chrome
      ? 'with(win)(function()eval('+ uneval(js) +'))()'
-     : (sb.__proto__ = rwin, js)),
+     : (sb.__proto__ = barewin, js)),
     sb, 1.8, 'data:xqjs;charset=utf-8,'+ encodeURI(js));
 }
 function macload(){
@@ -129,6 +130,10 @@ function macload(){
     };
   }
   self.macrun = m;
+}
+function chromep(win){
+  try { return !!Cu.evalInSandbox('Components.utils', Cu.Sandbox(win)) }
+  catch([]){ return false }
 }
 
 function copand() say(copy(expand(code.value)));
