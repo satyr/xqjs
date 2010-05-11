@@ -16,7 +16,8 @@ addEventListener('DOMContentLoaded', function xqjsInit(ev){
 }, false);
 
 function xqjs(win){
-  var me = this.openDialog('chrome://xqjs/content', 'xqjs', 'resizable', win);
+  var me = this.openDialog(
+    'chrome://xqjs/content', 'xqjs', 'resizable,dialog=0', win);
   me.focus();
   return me;
 }
