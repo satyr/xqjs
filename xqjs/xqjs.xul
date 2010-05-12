@@ -4,6 +4,7 @@
  xmlns:h="http://www.w3.org/1999/xhtml"
  id="xqjs" width="600" height="300"
  persist="screenX screenY width height sizemode">
+ <h:head><h:link rel="icon" href="chrome/icons/default/xqjs.ico"/></h:head>
  <keyset>
   <key id="keyExecute" label="Execute" oncommand="execute()"/>
   <key id="keyHistoryBack" label="History Back" oncommand="go(-1)"/>

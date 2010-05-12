@@ -256,6 +256,8 @@ function ellipsize(str, num, end){
 
 function fillwin(menu){
   const {nsIXULWindow, nsIDocShell} = Ci;
+  const FS = (Cc['@mozilla.org/browser/favicon-service;1']
+              .getService(Ci.nsIFaviconService));
   var type = Ci.nsIDocShellTreeItem['type'+ menu.parentNode.id], len = 0;
   var winum = Services.wm.getXULWindowEnumerator(null);
   while(winum.hasMoreElements()) try {
@@ -270,11 +272,15 @@ function fillwin(menu){
   } catch(e){ Cu.reportError(e) }
 
   function add(win){
-    var mi = document.createElement('menuitem'), label = fmtitle(win);
-    if(++len <= 36){
+    var label = fmtitle(win), mi = lmn('menuitem', {
+      class: 'menuitem-iconic',
+      image: FS.getFaviconImageForPage(win.document.documentURIObject).spec,
+    });
+    if(win === target.win) mi.setAttribute('disabled', true);
+    else if(++len <= 36){
       let key = len < 11 ? len % 10 : (len-1).toString(36).toUpperCase();
       mi.setAttribute('accesskey', key);
-      label = key + ' ' + label;
+      label = key +' '+ label;
     }
     mi.setAttribute('label', label);
     menu.appendChild(mi).win = win;
