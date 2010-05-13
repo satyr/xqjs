@@ -2,6 +2,8 @@
  <keyset id="mainKeyset"><key id="key_xqjs"/></keyset>
  <menupopup id="menu_ToolsPopup">
   <menuitem id="mi_xqjs" accesskey="x" key="key_xqjs"
+   class="menuitem-iconic"
+   image="resource://xqjs/chrome/icons/default/xqjs.ico"
    insertbefore="sanitizeSeparator"/>
  </menupopup>
  <script type="application/javascript;version=1.8"
