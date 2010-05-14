@@ -233,8 +233,13 @@ function inspect(x){
   var s, nt = x.nodeType;
   if(nt === 1) s = xmls(x.cloneNode(0)).replace(/ xmlns=".+?"/, '');
   else if(nt) s = x.nodeValue;
-  if(s == null && (s = String(x)) === os)
-    s = '{'+ keys(unwrap(x)).join(', ') +'}';
+  if(s == null){
+    try { s = String(x) } catch(e){
+      x.__proto__ ? Cu.reportError(e) : t = 'Null';
+      s = os;
+    }
+    if(s === os) s = '{'+ keys(unwrap(x)).join(', ') +'}';
+  }
   return s +'  '+ t;
 }
 function fmtitle(win){
