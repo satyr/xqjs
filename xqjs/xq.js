@@ -1,5 +1,6 @@
 Cu.import('resource://xqjs/coffee.jsm');
 const O2S = Object.prototype.toString;
+const ELLIPSIS = Preferences.get('intl.ellipsis', '\u2026');
 
 var __ = [];
 var utils =
@@ -253,10 +254,9 @@ function fmtitle(win){
 function ellipsize(str, num, end){
   if(num < 1) return '';
   if(str.length <= num) return str;
-  const E = '..';
-  if(end) return str.slice(0, num - 1) + E;
+  if(end) return str.slice(0, num - 1) + ELLIPSIS;
   var i = num / 2;
-  return str.slice(0, num - i) + E + str.slice(str.length - i + 1);
+  return str.slice(0, num - i) + ELLIPSIS + str.slice(str.length - i + 1);
 }
 
 function fillwin(menu){
