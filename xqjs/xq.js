@@ -21,7 +21,7 @@ var utils =
  function type(x) x == null ? '' : O2S.call(x).slice(8, -1),
  function keys(x) [k for(k in x && new Iterator(x, true))],
  function xmls(x) XMLSerializer().serializeToString(x),
- function unwrap(x){
+ XPCNativeWrapper.unwrap || function unwrap(x){
    try { return XPCNativeWrapper(x).wrappedJSObject || x }
    catch([]){ return x }
  },
