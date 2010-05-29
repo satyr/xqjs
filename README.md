@@ -23,3 +23,4 @@ is a simple JavaScript console for [Firefox](http://firefox.com) that:
 
 ###invocation
 - Hold _shift_ to target the current page by default.
+- Access __chrome://xqjs/content__ to open it within the browser.
