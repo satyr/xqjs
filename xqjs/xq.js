@@ -50,7 +50,7 @@ var utils =
    return args;
  },
  function target(win)(
-   target.win = win,
+   target.win = win = win && win.document ? win : opener || self,
    target.chrome = chromep(win),
    document.title = 'xqjs'+ (win === self ? '' : ': '+ fmtitle(win))),
  ];
