@@ -52,6 +52,7 @@ var utils =
  function target(win)(
    target.win = win = win && win.document ? win : opener || self,
    target.chrome = chromep(win),
+   target.sb = sandbox(win),
    document.title = 'xqjs'+ (win === self ? '' : ': '+ fmtitle(win))),
  ];
 for each(let f in utils) this[f.name] = f;
@@ -102,21 +103,25 @@ function execute(){
   return r;
 }
 function evaluate(js){
-  var {win} = target, barewin = unwrap(win), sb = Cu.Sandbox(barewin);
+  var {sb} = target;
+  [sb._] = __;
+  return Cu.evalInSandbox(
+    target.chrome
+    ? 'with(win) eval('+ uneval(js) +')'
+    : ((sb.__proto__ = unwrap(target.win)), js),
+    sb, 1.8, 'data:xqjs;charset=utf-8,'+ encodeURI(js));
+}
+function sandbox(win){
+  var sb = Cu.Sandbox(win);
   for each(let f in utils) sb[f.name] = f;
   sb.__defineGetter__('main', main);
-  sb.win = barewin;
+  sb.win = unwrap(win);
   sb.__ = __;
-  sb._ = __[0];
   sb.Number.prototype.__iterator__ = function numit(){
     if(this < 0) for(var i = -this; --i >= 0;) yield i;
     else for(i = -1; ++i < this;) yield i;
   };
-  return Cu.evalInSandbox(
-    (target.chrome
-     ? 'with(win)(function()eval('+ uneval(js) +'))()'
-     : (sb.__proto__ = barewin, js)),
-    sb, 1.8, 'data:xqjs;charset=utf-8,'+ encodeURI(js));
+  return sb;
 }
 function macload(){
   try {
