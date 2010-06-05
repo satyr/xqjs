@@ -28,7 +28,10 @@ var utils =
          .getService(Ci.nsIClipboardHelper).copyString(s)),
    s),
  function type(x) x == null ? '' : O2S.call(x).slice(8, -1),
- function keys(x) [k for(k in x && new Iterator(x, true))],
+ function keys(x){
+   try { var it = x && new Iterator(x, true) } catch([]){ return [] }
+   return [k for(k in it)];
+ },
  function xmls(x) XMLSerializer().serializeToString(x),
  XPCNativeWrapper.unwrap || function unwrap(x){
    try { return new XPCNativeWrapper(x).wrappedJSObject }
