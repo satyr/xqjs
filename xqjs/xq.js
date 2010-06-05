@@ -22,7 +22,7 @@ var utils =
  function keys(x) [k for(k in x && new Iterator(x, true))],
  function xmls(x) XMLSerializer().serializeToString(x),
  XPCNativeWrapper.unwrap || function unwrap(x){
-   try { return XPCNativeWrapper(x).wrappedJSObject || x }
+   try { return new XPCNativeWrapper(x).wrappedJSObject }
    catch([]){ return x }
  },
  function xpath(xp, doc, one){
