@@ -1,6 +1,15 @@
 Cu.import('resource://xqjs/coffee.jsm');
 const O2S = Object.prototype.toString;
 const ELLIPSIS = Preferences.get('intl.ellipsis', '\u2026');
+const NS = {
+  x: 'http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul',
+  e: 'http://www.mozilla.org/2004/em-rdf#',
+  a: 'http://www.w3.org/2005/Atom',
+  s: 'http://www.w3.org/2000/svg',
+  r: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
+  h: 'http://www.w3.org/1999/xhtml',
+  m: 'http://www.w3.org/1998/Math/MathML',
+};
 
 var __ = [];
 var utils =
@@ -28,8 +37,8 @@ var utils =
  function xpath(xp, doc, one){
    if(typeof doc !== 'object') one = doc, doc = 0;
    doc = doc || target.win.document;
-   var ns = doc.documentElement.namespaceURI;
-   var r = doc.evaluate(xp, doc, function() ns, XPathResult.ANY_TYPE, null);
+   var r = doc.evaluate(
+     xp, doc, function([c]) NS[c], XPathResult.ANY_TYPE, null);
    switch(r.resultType){
      case r.STRING_TYPE : return r.stringValue;
      case r.NUMBER_TYPE : return r.numberValue;
@@ -115,6 +124,7 @@ function sandbox(win){
   var sb = Cu.Sandbox(win);
   for each(let f in utils) sb[f.name] = f;
   sb.__defineGetter__('main', main);
+  sb.ns = NS;
   sb.win = unwrap(win);
   sb.__ = __;
   sb.Number.prototype.__iterator__ = function numit(){
