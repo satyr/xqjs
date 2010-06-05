@@ -106,7 +106,13 @@ function execute(){
   code.focus();
   var js = expand(save(code.value));
   if(js){
-    try { var r = p(evaluate(js)) } catch(e){ Cu.reportError(r = say(e)) }
+    try {
+      var r = p(evaluate(js));
+      document.documentElement.className = '';
+    } catch(e){
+      Cu.reportError(r = say(e));
+      document.documentElement.className = 'error';
+    }
     r === __[0] || __.unshift(r);
   }
   return r;
