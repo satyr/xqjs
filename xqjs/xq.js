@@ -23,6 +23,11 @@ var utils =
    return s;
  },
  function log(s)(Services.console.logStringMessage('xqjs: '+ s), s),
+ function sum(a){
+   for each(let key in Array.slice(arguments, 1))
+     a = Array.map(a, typeof key === 'function' ? key : function(x) x[key], a);
+   return a.reduce(function(x, y) x + y);
+ },
  function copy(s)(
    s && (Cc['@mozilla.org/widget/clipboardhelper;1']
          .getService(Ci.nsIClipboardHelper).copyString(s)),
