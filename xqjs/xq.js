@@ -222,21 +222,19 @@ function complete(){
     pos -= abr.length - complete.abr.length;
     var {gen, abr} = complete;
   }
-  gen = gen || wordig();
-  try { for(;;){
-    let word = gen.next();
-    if(!~word.lastIndexOf(abr, 0)) continue;
-    code.selectionStart = pos;
+  gen = gen || wordig(RegExp('\\b'+ rescape(abr) +'[\\w$]+', 'g'));
+  try { var word = gen.next() } catch(e if e === StopIteration){}
+  code.selectionStart = pos;
+  if(word)
     code.editor.QueryInterface(Ci.nsIPlaintextEditor)
       .insertText(word.slice(abr.length));
-    complete.pos = code.selectionStart;
-    complete.gen = gen;
-    complete.abr = abr;
-    break;
-  }} catch(e if e === StopIteration){ complete.gen = null };
+  else if(complete.gen)
+    code.editor.deleteSelection(code.editor.ePrevious);
+  [complete.pos, complete.gen, complete.abr] =
+    word ? [code.selectionStart, gen, abr] : [];
 }
-function wordig(){
-  var re = /[\w$]{3,}/g, dic = {__proto__: null}, word;
+function wordig(re){
+  var word, dic = {__proto__: null};
   for(var s in new function(){
     yield results.value;
     for each(var s in bin) yield s;
@@ -287,6 +285,7 @@ function ellipsize(str, num, end){
   var i = num / 2;
   return str.slice(0, num - i) + ELLIPSIS + str.slice(str.length - i + 1);
 }
+function rescape(s) String(s).replace(/[.?*+^$|()\{\[\\]/g, '\\$&');
 
 function fillwin(menu){
   const {nsIXULWindow, nsIDocShell} = Ci;
