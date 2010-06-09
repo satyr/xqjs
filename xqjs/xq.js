@@ -11,8 +11,7 @@ const NS = {
   m: 'http://www.w3.org/1998/Math/MathML',
 };
 
-var __ = [];
-var utils =
+var __ = [], cur = 0, utils =
 [function p(x)(say(inspect(x)), x),
  function say(s){
    var {editor} = results;
@@ -48,8 +47,8 @@ var utils =
    var r = doc.evaluate(
      xp, doc, function([c]) NS[c], XPathResult.ANY_TYPE, null);
    switch(r.resultType){
-     case r.STRING_TYPE : return r.stringValue;
-     case r.NUMBER_TYPE : return r.numberValue;
+     case r.STRING_TYPE: return r.stringValue;
+     case r.NUMBER_TYPE: return r.numberValue;
      case r.BOOLEAN_TYPE: return r.booleanValue;
      case r.UNORDERED_NODE_ITERATOR_TYPE:
      if(one) return r.iterateNext();
@@ -97,7 +96,6 @@ function onload(){
   target((this.arguments || 0)[0] || opener || this);
   for each(let lm in qsa('textbox, checkbox')) this[lm.id] = lm;
   this.bin = JSON.parse(prefs.get('history', '[]'));
-  this.pos = 0;
   macload();
   macros.checked = prefs.get('macros.on');
   coffee.checked = prefs.get('coffee.on');
@@ -112,16 +110,14 @@ function onload(){
 
 function execute(){
   code.focus();
-  var js = expand(save(code.value));
+  var js = expand(save(code.value)), cn = '';
   if(js){
-    try {
-      var r = p(evaluate(js));
-      document.documentElement.className = '';
-    } catch(e){
+    try { var r = p(evaluate(js)) } catch(e){
       Cu.reportError(r = say(e));
-      document.documentElement.className = 'error';
+      cn = 'error';
     }
     r === __[0] || __.unshift(r);
+    document.documentElement.className = cn;
   }
   return r;
 }
@@ -131,7 +127,7 @@ function evaluate(js){
   return Cu.evalInSandbox(
     target.chrome
     ? 'with(win) eval('+ uneval(js) +')'
-    : ((sb.__proto__ = unwrap(target.win)), js),
+    : ((sb.__proto__ = sb.win), js),
     sb, 1.8, 'data:xqjs;charset=utf-8,'+ encodeURI(js));
 }
 function sandbox(win){
@@ -199,17 +195,17 @@ function cofferr(src, msg, lno, cno){
 }
 
 function go(dir){
-  if((pos -= dir) < 1){
+  if((cur -= dir) < 1){
     if(save(code.value)) code.value = '';
-    return pos = 0;
+    return cur = 0;
   }
-  if(bin.length < pos) return pos = bin.length;
-  code.value = bin[pos - 1];
-  return pos;
+  if(bin.length < cur) return cur = bin.length;
+  code.value = bin[cur - 1];
+  return cur;
 }
 function save(s){
-  if(!s) return s;
-  var i = bin.indexOf(s);
+  var i = s && bin.indexOf(s);
+  if(!i) return s;
   if(~i) bin.splice(i, 1);
   bin.unshift(s);
   return s;
