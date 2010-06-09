@@ -17,3 +17,9 @@ function empty(lm){
 }
 function main() Services.wm.getMostRecentWindow('navigator:browser');
 function hurl() let(b = main().gBrowser) b.addTab.apply(b, arguments);
+function lazy(o, fn, p){
+  if(typeof p !== 'string') p = fn.name;
+  o.__defineGetter__(p, function() o[p] = delete o[p] && fn.call(o));
+  return o;
+}
+function rescape(s) String(s).replace(/[.?*+^$|()\{\[\\]/g, '\\$&');

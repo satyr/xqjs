@@ -1,4 +1,3 @@
-Cu.import('resource://xqjs/coffee.jsm');
 const O2S = Object.prototype.toString;
 const ELLIPSIS = Preferences.get('intl.ellipsis', '\u2026');
 const NS = {
@@ -74,6 +73,10 @@ var __ = [], cur = 0, utils =
 for each(let f in utils) this[f.name] = f;
 utils.push(hurl);
 
+[function bin() JSON.parse(prefs.get('history', '[]')),
+ function CoffeeScript() Cu.import('resource://xqjs/coffee.jsm').CoffeeScript,
+ ].reduce(lazy, this);
+
 { let apop = qs('#Actions').appendChild(lmn('menupopup'));
   for each(let key in qsa('key')){
     let {id} = key, json = prefs.get(id, '{}'), atrs;
@@ -95,7 +98,6 @@ utils.push(hurl);
 function onload(){
   target((this.arguments || 0)[0] || opener || this);
   for each(let lm in qsa('textbox, checkbox')) this[lm.id] = lm;
-  this.bin = JSON.parse(prefs.get('history', '[]'));
   macload();
   macros.checked = prefs.get('macros.on');
   coffee.checked = prefs.get('coffee.on');
@@ -281,7 +283,6 @@ function ellipsize(str, num, end){
   var i = num / 2;
   return str.slice(0, num - i) + ELLIPSIS + str.slice(str.length - i + 1);
 }
-function rescape(s) String(s).replace(/[.?*+^$|()\{\[\\]/g, '\\$&');
 
 function fillwin(menu){
   const {nsIXULWindow, nsIDocShell} = Ci;
