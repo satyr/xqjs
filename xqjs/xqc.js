@@ -65,6 +65,8 @@ function empty(lm){
   return lm;
 }
 function xmls(node) XMLSerializer().serializeToString(node);
+function fmnodes(ns)(
+  '['+ Array.map(ns, function(n) n.nodeName).join(', ') +']');
 
 function main() Services.wm.getMostRecentWindow('navigator:browser');
 function hurl() let(b = main().gBrowser) b.addTab.apply(b, arguments);
@@ -131,9 +133,15 @@ function inspect(x){
     os = t[3] === 'N' ? '[object '+ t +' '+ wos +']' : wos;
     t += ':'+ wos.slice(8, -1);
   }
-  var s, nt = x.nodeType;
-  if(nt === 1) s = xmls(x.cloneNode(0)).replace(/ xmlns=".+?"/, '');
-  else if(nt) s = x.nodeValue;
+  var s = (
+    x instanceof Node
+    ? let(nt = x.nodeType)(
+      nt === x.DOCUMENT_FRAGMENT_NODE
+      ? fmnodes(x.childNodes):
+      nt === x.ELEMENT_NODE
+      ? xmls(x.cloneNode(0))
+      : x.nodeValue)
+    : x instanceof NodeList ? fmnodes(x) : null);
   if(s == null){
     try { s = String(x) } catch(e){
       x.__proto__ ? Cu.reportError(e) : t = 'Null';
