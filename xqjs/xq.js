@@ -1,7 +1,7 @@
 var __ = [], cur = 0, utils =
 [p, say, target, hurl,
  log, copy, domi, fbug,
- dom, xmls, xpath,
+ dom, zen, xmls, xpath,
  sum, type, keys, unwrap];
 
 [function bin() JSON.parse(prefs.get('history', '[]')),

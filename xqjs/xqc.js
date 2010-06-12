@@ -153,3 +153,36 @@ function ellipsize(str, num, end){
   var i = num / 2;
   return str.slice(0, num - i) + ELLIPSIS + str.slice(str.length - i + 1);
 }
+
+function zen(code){
+  var word = /[-\w$]+/, char = /^[^]/, digits = /\d+/;
+  var kv = /([-\w$]+)(?:=([^\]]*))?\]?/, content = /{([^\}]*)}?/;
+  var zs = code.trim().split(/\s{0,}([>+])\s{0,}/);
+  var root = <_/>, curs = [root], sep;
+  for(let i = -1, l = zs.length; ++i < l; sep = zs[++i]) if(word.test(zs[i])){
+    let lm = <{RegExp.lastMatch}/>, n = 1;
+    for(let _, m; char.test(_ = RegExp.rightContext);) switch(_[0]){
+      case '#': lm.@id = word(_) || '';
+      break;
+      case '.': lm.@class += (lm.@class +'' && ' ') + (word(_) || '');
+      break;
+      case '[': if((m = kv(_))) lm['@'+ m[1]] = m[2] || '';
+      break;
+      case '{': if((m = content(_))) lm.appendChild(m[1]);
+      break;
+      case '*': n *= +digits(_) || 1;
+    }
+    let _curs = [], p = sep === '+';
+    let sl = n > 1 && ~code.indexOf('$') && lm.toXMLString();
+    for each(let cur in curs){
+      if(p) cur = cur.parent() || cur;
+      for(let i = 1; i <= n; ++i){
+        let clm = sl ? XML(sl.replace(/\$/g, i)) : lm.copy();
+        cur.appendChild(clm);
+        _curs.push(clm);
+      }
+    }
+    curs = _curs;
+  }
+  return root.*;
+}
