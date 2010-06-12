@@ -109,12 +109,11 @@ function say(s){
   editor.beginningOfDocument();
   editor.QueryInterface(Ci.nsIPlaintextEditor).insertText(s +'\n');
   editor.beginningOfDocument();
-  results.inputField.scrollTop = 0
-    return s;
+  results.inputField.scrollTop = 0;
+  return s;
 }
 function xpath(xp, doc, one){
-  if(typeof doc !== 'object') one = doc, doc = 0;
-  doc = doc || target.win.document;
+  if(typeof doc !== 'object') one = doc, doc = target.win.document;
   var r = doc.evaluate(
     xp, doc, function([c]) NS[c], XPathResult.ANY_TYPE, null);
   switch(r.resultType){
@@ -207,22 +206,21 @@ function wordig(re){
 
 function fillwin(menu){
   const {nsIXULWindow, nsIDocShell} = Ci;
+  const {ENUMERATE_FORWARDS} = nsIDocShell;
   const FS = (Cc['@mozilla.org/browser/favicon-service;1']
               .getService(Ci.nsIFaviconService));
   var type = Ci.nsIDocShellTreeItem['type'+ menu.parentNode.id], len = 0;
-  var winum = Services.wm.getXULWindowEnumerator(null);
-  while(winum.hasMoreElements()) try {
-    let {docShell} = winum.getNext().QueryInterface(nsIXULWindow);
-    let dshenum = docShell.getDocShellEnumerator(
-      type, nsIDocShell.ENUMERATE_FORWARDS);
-    while(dshenum.hasMoreElements()) try {
-      let win = (dshenum.getNext().QueryInterface(nsIDocShell)
-                 .contentViewer.DOMDocument.defaultView);
-      if(win.location.href !== 'about:blank') add(win);
-    } catch(e){ Cu.reportError(e) }
-  } catch(e){ Cu.reportError(e) }
-
+  var xwe = Services.wm.getXULWindowEnumerator(null);
+  for(let xw in each(xwe, nsIXULWindow)){
+    let dse = xw.docShell.getDocShellEnumerator(type, ENUMERATE_FORWARDS);
+    for(let ds in each(dse, nsIDocShell))
+      add(ds.contentViewer.DOMDocument.defaultView);
+  }
+  function each(nmr, ifc){
+    while(nmr.hasMoreElements()) yield nmr.getNext().QueryInterface(ifc);
+  }
   function add(win){
+    if(win.location.href === 'about:blank') return;
     var label = fmtitle(win), mi = lmn('menuitem', {
       class: 'menuitem-iconic',
       image: FS.getFaviconImageForPage(win.document.documentURIObject).spec,
@@ -236,7 +234,6 @@ function fillwin(menu){
     mi.setAttribute('label', label);
     menu.appendChild(mi).win = win;
   }
-
   menu.hasChildNodes() ||
     menu.appendChild(lmn('menuitem', {label: '-', disabled: true}));
 }
