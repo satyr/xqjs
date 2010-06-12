@@ -1,7 +1,7 @@
 var __ = [], cur = 0, utils =
 [p, say, target, hurl,
  log, copy, domi, fbug,
- xmls, xpath,
+ dom, xmls, xpath,
  sum, type, keys, unwrap];
 
 [function bin() JSON.parse(prefs.get('history', '[]')),
@@ -82,6 +82,10 @@ function sandbox(win){
     if(this < 0) for(var i = -this; --i >= 0;) yield i;
     else for(i = -1; ++i < this;) yield i;
   };
+  sb.XML.setSettings({
+    ignoreComments: false,
+    ignoreProcessingInstructions: false,
+  });
   return sb;
 }
 function macload(){
@@ -124,6 +128,7 @@ function xpath(xp, doc, one){
     return a;
   }
 }
+function dom(o, doc) unwrap(node(o, doc || target.win.document));
 
 function copand() say(copy(expand(code.value)));
 function options(){

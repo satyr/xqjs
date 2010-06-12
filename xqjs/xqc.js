@@ -17,10 +17,48 @@ var prefs = new Preferences('extensions.xqjs.');
 
 function qs(s) document.querySelector(s);
 function qsa(s) Array.slice(document.querySelectorAll(s));
-function lmn(name, atrs){
-  var lm = document.createElement(name);
-  for(let key in atrs) lm.setAttribute(key, atrs[key]);
+function lmn() node(Array.slice(arguments), document);
+
+function node(ls, doc){
+  if(ls instanceof Node) return ls;
+  switch(type(ls)){
+    case 'Array': break; // ['name', {attr}, ...children]
+    case 'XML': return node4x(ls, doc);
+    default: return doc.createTextNode(ls);
+  }
+  if(typeof ls[0] !== 'string'){
+    let df = doc.createDocumentFragment();
+    for each(let l in ls) df.appendChild(node(l, doc));
+    return df;
+  }
+  let lm = doc.createElement(ls[0]);
+  if(type((ls = ls.slice(1))[0]) === 'Object')
+    for each(let [k, v] in Iterator(ls.shift())) lm.setAttribute(k, v);
+  for each(let l in ls) lm.appendChild(node(l, doc));
   return lm;
+}
+function node4x(xs, doc){
+  let df = doc.createDocumentFragment();
+  for each(let x in XMLList(xs)) switch(x.nodeKind()){
+    case 'element':
+    let {uri, localName: name} = x.name();
+    let lm = uri ? doc.createElementNS(uri, name) : doc.createElement(name);
+    for each(let a in x.@*::*){
+      let {uri, localName: name} = a.name();
+      uri ? lm.setAttributeNS(uri, name, a) : lm.setAttribute(name, a);
+    }
+    lm.appendChild(node4x(x.*::*, doc));
+    df.appendChild(lm);
+    break;
+    case 'text':
+    df.appendChild(doc.createTextNode(x)); break;
+    case 'comment':
+    df.appendChild(doc.createComment(x.toString().slice(4, -3))); break;
+    case 'processing-instruction':
+    let [, t, d] = /^<\?(\S+) ?([^]*)\?>$/(x);
+    df.appendChild(doc.createProcessingInstruction(t, d));
+  }
+  return df.childNodes.length === 1 ? df.lastChild : df;
 }
 function empty(lm){
   while(lm.hasChildNodes()) lm.removeChild(lm.lastChild);
