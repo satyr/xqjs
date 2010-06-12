@@ -77,6 +77,7 @@ function sandbox(win){
   sb.__defineGetter__('main', main);
   sb.ns = NS;
   sb.win = unwrap(win);
+  sb.doc = unwrap(win.document);
   sb.__ = __;
   sb.Number.prototype.__iterator__ = function numit(){
     if(this < 0) for(var i = -this; --i >= 0;) yield i;
