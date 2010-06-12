@@ -12,7 +12,7 @@ pref('extensions.xqjs.keyHistoryBack',
 pref('extensions.xqjs.keyHistoryForward',
      '{"keycode":"VK_DOWN", "modifiers":"accel"}');
 pref('extensions.xqjs.keyComplete',
-     '{"keycode":"VK_TAB", "modifiers":"accel"}');
+     '{"key":"/", "modifiers":"accel"}');
 pref('extensions.xqjs.keyCopyCode',
      '{"key":"C", "modifiers":"accel,shift"}');
 pref('extensions.xqjs.keyOptions',
