@@ -37,28 +37,34 @@ function node(ls, doc){
   for each(let l in ls) lm.appendChild(node(l, doc));
   return lm;
 }
-function node4x(xs, doc){
-  let df = doc.createDocumentFragment();
-  for each(let x in XMLList(xs)) switch(x.nodeKind()){
+function node4x(xml, doc){
+  if(xml.length() === 1) switch(xml.nodeKind()){
+    case 'attribute': let at = true;
     case 'element':
-    let {uri, localName: name} = x.name();
+    let {uri, localName: name} = xml.name();
+    if(at){
+      at = uri ? doc.createAttributeNS(uri, name) : doc.createAttribute(name);
+      at.nodeValue = xml;
+      return at;
+    }
     let lm = uri ? doc.createElementNS(uri, name) : doc.createElement(name);
-    for each(let a in x.@*::*){
+    for each(let a in xml.@*::*){
       let {uri, localName: name} = a.name();
       uri ? lm.setAttributeNS(uri, name, a) : lm.setAttribute(name, a);
     }
-    lm.appendChild(node4x(x.*::*, doc));
-    df.appendChild(lm);
-    break;
-    case 'text':
-    df.appendChild(doc.createTextNode(x)); break;
-    case 'comment':
-    df.appendChild(doc.createComment(x.toString().slice(4, -3))); break;
+    lm.appendChild(node4x(xml.*::*, doc));
+    return lm;
+    case 'text': return doc.createTextNode(xml);
+    case 'comment': return doc.createComment(xml.toString().slice(4, -3));
     case 'processing-instruction':
-    let [, t, d] = /^<\?(\S+) ?([^]*)\?>$/(x);
-    df.appendChild(doc.createProcessingInstruction(t, d));
+    let [, target, data] = /^<\?(\S+) ?([^]*)\?>$/(xml);
+    return doc.createProcessingInstruction(target, data);
   }
-  return df.childNodes.length === 1 ? df.lastChild : df;
+  if(0 in xml && xml[0].nodeKind() === 'attribute')
+    return node4x(xml.parent(), doc).attributes;
+  var df = doc.createDocumentFragment();
+  for each(let x in xml) df.appendChild(node4x(x, doc));
+  return df;
 }
 function empty(lm){
   while(lm.hasChildNodes()) lm.removeChild(lm.lastChild);
