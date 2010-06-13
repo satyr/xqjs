@@ -2,7 +2,8 @@ var __ = [], cur = 0, utils =
 [p, say, target, hurl,
  log, copy, domi, fbug,
  dom, zen, xmls, xpath,
- sum, type, keys, unwrap];
+ type, keys, unwrap,
+ sum, last];
 
 [function bin() JSON.parse(prefs.get('history', '[]')),
  function CoffeeScript() Cu.import('resource://xqjs/coffee.jsm').CoffeeScript,

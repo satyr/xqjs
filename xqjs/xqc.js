@@ -112,11 +112,6 @@ function lazy(o, fn, p){
   o.__defineGetter__(p, function() o[p] = delete o[p] && fn.call(o));
   return o;
 }
-function sum(a){
-  for each(let key in Array.slice(arguments, 1))
-    a = Array.map(a, typeof key === 'function' ? key : function(x) x[key], a);
-  return a.reduce(function(x, y) x + y);
-}
 function keys(x){
   try { var it = x && new Iterator(x, true) } catch([]){ return [] }
   return [k for(k in it)];
@@ -156,6 +151,13 @@ function inspect(x){
   }
   return s +'  '+ t;
 }
+
+function sum(a){
+  for each(let key in Array.slice(arguments, 1))
+    a = Array.map(a, typeof key === 'function' ? key : function(x) x[key], a);
+  return a.reduce(function(x, y) x + y);
+}
+function last(a, i) a[(a.length >>> 0) - (i >>> 0) - 1];
 
 function rescape(s) String(s).replace(/[.?*+^$|()\{\[\\]/g, '\\$&');
 function ellipsize(str, num, end){
