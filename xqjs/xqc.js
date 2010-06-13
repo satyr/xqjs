@@ -98,8 +98,7 @@ function fbug(){
 }
 
 var unwrap = XPCNativeWrapper.unwrap || function unwrap(x){
-  try { return new XPCNativeWrapper(x).wrappedJSObject }
-  catch([]){ return x }
+  try { return new XPCNativeWrapper(x).wrappedJSObject } catch([]){ return x }
 };
 function type(x) x == null ? '' : O2S.call(x).slice(8, -1);
 function lazy(o, fn, p){

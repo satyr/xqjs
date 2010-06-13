@@ -40,6 +40,15 @@ function onload(){
     }));
   code.focus();
 }
+function onunload(){
+  save(code.value);
+  bin.length = Math.min(bin.length, prefs.get('history.max'));
+  prefs.set({
+    'history': JSON.stringify(bin),
+    'macros.on': macros.checked,
+    'coffee.on': coffee.checked,
+  });
+}
 
 function target(win){
   target.win = win = win && win.document ? win : opener || self;
@@ -206,45 +215,31 @@ function wordig(re){
 }
 
 function fillwin(menu){
+  function each(fn, nmr, ifc){
+    while(nmr.hasMoreElements()) fn(nmr.getNext().QueryInterface(ifc));
+  }
   const {nsIXULWindow, nsIDocShell} = Ci;
-  const {ENUMERATE_FORWARDS} = nsIDocShell;
+  const DS_TYPE = Ci.nsIDocShellTreeItem['type'+ menu.parentNode.id];
+  const DS_DIR  = nsIDocShell.ENUMERATE_FORWARDS;
   const FS = (Cc['@mozilla.org/browser/favicon-service;1']
               .getService(Ci.nsIFaviconService));
-  var type = Ci.nsIDocShellTreeItem['type'+ menu.parentNode.id], len = 0;
-  var xwe = Services.wm.getXULWindowEnumerator(null);
-  for(let xw in each(xwe, nsIXULWindow)){
-    let dse = xw.docShell.getDocShellEnumerator(type, ENUMERATE_FORWARDS);
-    for(let ds in each(dse, nsIDocShell))
-      add(ds.contentViewer.DOMDocument.defaultView);
-  }
-  function each(nmr, ifc){
-    while(nmr.hasMoreElements()) yield nmr.getNext().QueryInterface(ifc);
-  }
-  function add(win){
-    if(win.location.href === 'about:blank') return;
-    var label = fmtitle(win), mi = lmn('menuitem', {
-      class: 'menuitem-iconic',
-      image: FS.getFaviconImageForPage(win.document.documentURIObject).spec,
-    });
-    if(win === target.win) mi.setAttribute('disabled', true);
-    else if(++len <= 36){
-      let key = len < 11 ? len % 10 : (len-1).toString(36).toUpperCase();
-      mi.setAttribute('accesskey', key);
-      label = key +' '+ label;
-    }
-    mi.setAttribute('label', label);
-    menu.appendChild(mi).win = win;
-  }
-  menu.hasChildNodes() ||
-    menu.appendChild(lmn('menuitem', {label: '-', disabled: true}));
-}
-
-function onunload(){
-  save(code.value);
-  bin.length = Math.min(bin.length, prefs.get('history.max'));
-  prefs.set({
-    'history': JSON.stringify(bin),
-    'macros.on': macros.checked,
-    'coffee.on': coffee.checked,
-  });
+  var len = 0;
+  each(function(xw){
+    each(function(ds){
+      var doc = ds.contentViewer.DOMDocument;
+      if(doc.location.href === 'about:blank') return;
+      var win = doc.defaultView, label = fmtitle(win);
+      var icon = FS.getFaviconImageForPage(doc.documentURIObject).spec;
+      var mi = lmn('menuitem', {class: 'menuitem-iconic', image: icon});
+      if(win === target.win) mi.setAttribute('disabled', true);
+      else if(++len <= 36){
+        let key = len < 11 ? len % 10 : (len-1).toString(36).toUpperCase();
+        mi.setAttribute('accesskey', key);
+        label = key +' '+ label;
+      }
+      mi.setAttribute('label', label);
+      menu.appendChild(mi).win = win;
+    }, xw.docShell.getDocShellEnumerator(DS_TYPE, DS_DIR), nsIDocShell);
+  }, Services.wm.getXULWindowEnumerator(null), nsIXULWindow);
+  len || menu.appendChild(lmn(<menuitem label="×" disabled="true"/>));
 }
