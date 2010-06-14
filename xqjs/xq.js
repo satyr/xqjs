@@ -156,18 +156,15 @@ function expand(s){
   if(coffee.checked) try {
     s = CoffeeScript.compile(s, {no_wrap: true});
   } catch(e){
-    if(/^Parse error on line (\d+).*\n/.test(e.message))
-      cofferr(s, 'ParseError: token position = '+ RegExp["$'"], RegExp.$1);
-    else if(/^(SyntaxError.+) on line (\d+)/.test(e.message))
-      cofferr(s, RegExp.$1, RegExp.$2);
-    else Cu.reportError(p(e));
+    if(/ on line (\d+)/.test(e.message)) cofferr(s, e.message, +RegExp.$1);
+    else Cu.reportError(e);
     return '';
   }
   return s;
 }
 function cofferr(src, msg, lno, cno){
   let se = Cc['@mozilla.org/scripterror;1'].createInstance(Ci.nsIScriptError);
-  se.init(say('Coffee'+ msg), 'data:coffee;charset=utf-8,'+ encodeURI(src),
+  se.init(say('coffee: '+ msg), 'data:coffee;charset=utf-8,'+ encodeURI(src),
           src.split(/\r?\n/, lno).pop(), lno, cno, se.errorFlag, null);
   Services.console.logMessage(se);
 }
