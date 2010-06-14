@@ -214,7 +214,9 @@ function wordig(re){
 
 function fillwin(menu){
   function each(fn, nmr, ifc){
-    while(nmr.hasMoreElements()) fn(nmr.getNext().QueryInterface(ifc));
+    while(nmr.hasMoreElements()) try {
+      fn(nmr.getNext().QueryInterface(ifc));
+    } catch(e){ Cu.reportError(e) }
   }
   const {nsIXULWindow, nsIDocShell} = Ci;
   const DS_TYPE = Ci.nsIDocShellTreeItem['type'+ menu.parentNode.id];
@@ -224,8 +226,8 @@ function fillwin(menu){
   var len = 0;
   each(function(xw){
     each(function(ds){
-      var doc = ds.contentViewer.DOMDocument;
-      if(doc.location.href === 'about:blank') return;
+      var doc = (ds.contentViewer || 0).DOMDocument;
+      if(!doc || doc.location.href === 'about:blank') return;
       var win = doc.defaultView, label = fmtitle(win);
       var icon = FS.getFaviconImageForPage(doc.documentURIObject).spec;
       var mi = lmn('menuitem', {class: 'menuitem-iconic', image: icon});
@@ -239,5 +241,5 @@ function fillwin(menu){
       menu.appendChild(mi).win = win;
     }, xw.docShell.getDocShellEnumerator(DS_TYPE, DS_DIR), nsIDocShell);
   }, Services.wm.getXULWindowEnumerator(null), nsIXULWindow);
-  len || menu.appendChild(lmn(<menuitem label="×" disabled="true"/>));
+  len || menu.appendChild(lmn('menuitem', {label: '-', disabled: true}));
 }
