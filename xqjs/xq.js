@@ -30,15 +30,17 @@ var __ = [], cur = 0, utils =
 function onload(){
   target((this.arguments || 0)[0] || opener || this);
   for each(let lm in qsa('textbox, checkbox')) this[lm.id] = lm;
-  macload();
-  macros.checked = prefs.get('macros.on');
-  coffee.checked = prefs.get('coffee.on');
+  for each(let cb in [macros, coffee]){
+    cb.checked = prefs.get(cb.id +'.on');
+    cb.setAttribute('onclick', 'event.detail || code.focus()');
+  }
   for each(let menu in qsa('#Chrome, #Content'))
     menu.appendChild(lmn('menupopup', {
       oncommand: 'target(event.target.win)',
       onpopupshowing: 'fillwin(this)',
       onpopuphidden: 'empty(this)',
     }));
+  macload();
   code.focus();
 }
 function onunload(){
@@ -60,7 +62,6 @@ function target(win){
   return win;
 }
 function execute(){
-  code.focus();
   var js = expand(save(code.value)), cn = '';
   if(js){
     try { var r = p(evaluate(js)) } catch(e){
