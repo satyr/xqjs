@@ -139,15 +139,13 @@ function inspect(x){
       nt === x.DOCUMENT_FRAGMENT_NODE
       ? fmnodes(x.childNodes):
       nt === x.ELEMENT_NODE
-      ? xmls(x.cloneNode(0))
+      ? xmls(x.cloneNode(0)).replace(/ xmlns=".+?"/, '')
       : x.nodeValue)
     : x instanceof NodeList ? fmnodes(x) : null);
   if(s == null){
-    try { s = String(x) } catch(e){
-      x.__proto__ ? Cu.reportError(e) : t = 'Null';
-      s = os;
-    }
-    if(s === os) s = '{'+ keys(unwrap(x)).join(', ') +'}';
+    try { s = String(x) }
+    catch(e){ x.__proto__ ? Cu.reportError(e) : t = 'Null' }
+    if(s == null || s === os) s = '{'+ keys(unwrap(x)).join(', ') +'}';
   }
   return s +'  '+ t;
 }
