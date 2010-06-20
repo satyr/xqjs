@@ -61,7 +61,7 @@ function node4x(xml, doc){
     return doc.createProcessingInstruction(target, data);
   }
   if(0 in xml && xml[0].nodeKind() === 'attribute')
-    return node4x(xml.parent(), doc).attributes;
+    return [node4x(x, doc) for each(x in xml)];
   var df = doc.createDocumentFragment();
   for each(let x in xml) df.appendChild(node4x(x, doc));
   return df;
