@@ -116,13 +116,21 @@ function macload(){
 }
 
 function p(x)(say(inspect(x)), x);
-function say(s){
-  var {editor} = results;
+function say(x){
+  var {editor, inputField} = results, s = String(x), t;
+  if(s === say.last){
+    inputField.setSelectionRange(s.length, s.length + say.pad);
+    t = '  x'+ ++say.dup;
+    say.pad = t.length;
+  } else {
+    editor.beginningOfDocument();
+    say.last = s, say.dup = 1, say.pad = 0;
+    t = s +'\n';
+  }
+  editor.QueryInterface(Ci.nsIPlaintextEditor).insertText(t);
   editor.beginningOfDocument();
-  editor.QueryInterface(Ci.nsIPlaintextEditor).insertText(s +'\n');
-  editor.beginningOfDocument();
-  results.inputField.scrollTop = 0;
-  return s;
+  inputField.scrollTop = 0;
+  return x;
 }
 function xpath(xp, doc, one){
   if(typeof doc !== 'object') one = doc, doc = target.win.document;
