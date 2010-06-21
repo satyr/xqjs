@@ -1,5 +1,6 @@
 const {classes: Cc, interfaces: Ci, utils: Cu, results: Cr} = Components;
-Cu.import('resource://xqjs/Services.jsm');
+try { Cu.import('resource://gre/modules/Services.jsm') }
+catch([]){ Cu.import('resource://xqjs/Services.jsm') }
 Cu.import('resource://xqjs/Preferences.jsm');
 
 const O2S = Object.prototype.toString;
