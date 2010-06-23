@@ -77,9 +77,10 @@ function empty(lm){
   while(lm.hasChildNodes()) lm.removeChild(lm.lastChild);
   return lm;
 }
-function xmls(node) XMLSerializer().serializeToString(node);
-function fmnodes(ns)(
-  '['+ Array.map(ns, function(n) n.nodeName).join(', ') +']');
+function xmls(node)
+XMLSerializer().serializeToString(node).replace(/(<\S+) xmlns=".+?"/g, '$1');
+function fmnodes(ns)
+'['+ Array.map(ns, function(n) n.nodeName).join(', ') +']';
 
 function main() Services.wm.getMostRecentWindow('navigator:browser');
 function hurl() let(b = main().gBrowser) b.addTab.apply(b, arguments);
@@ -150,7 +151,7 @@ function inspect(x){
       nt === x.DOCUMENT_FRAGMENT_NODE
       ? fmnodes(x.childNodes):
       nt === x.ELEMENT_NODE
-      ? xmls(x.cloneNode(0)).replace(/ xmlns=".+?"/, '')
+      ? xmls(x.cloneNode(0))
       : x.nodeValue)
     : x instanceof NodeList ? fmnodes(x) : null);
   if(s == null){
