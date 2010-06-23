@@ -6,7 +6,7 @@ const DEFAULT_MACROS = String(<![CDATA[({
     switch($[1]){
       case 'a': return 'Array.slice(document.querySelectorAll('+ q +'))';
       case 'x': var one = 1;
-      case 'X': return 'this.xpath('+ q +','+ !!one +')';
+      case 'X': return 'this.xpath('+ q +','+ ~~one +')';
       case 'z': return 'this.dom(this.zen('+ q +'))';
     }
     return 'document.querySelector('+ q +')';

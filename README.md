@@ -24,9 +24,9 @@ is a simple JavaScript console for [Firefox](http://firefox.com) that:
     #a'#se.le[ct=or]'
     //=> Array.slice(document.querySelectorAll('#se.le[ct=or]'))
     #x'//x:p[@th]'
-    //=> this.xpath('//x:p[@th]',true)
+    //=> this.xpath('//x:p[@th]',1)
     #X'//x:p[@th]'
-    //=> this.xpath('//x:p[@th]')
+    //=> this.xpath('//x:p[@th]',0)
     #z'zen+code'
     //=> this.dom(this.zen('zen+code'))
 
