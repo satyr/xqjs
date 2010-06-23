@@ -15,11 +15,35 @@ is a simple JavaScript console for [Firefox](http://firefox.com) that:
   and [key](https://developer.mozilla.org/en/XUL/key)
   [customization](http://www.json.org).
 
+##default macros
+    #{x} //=> f(x,y,z){return x}
+    #(x) //=> f(x,y,z)(x)
+
+    #'#se.le[ct=or]'
+    //=> document.querySelector('#se.le[ct=or]')
+    #a'#se.le[ct=or]'
+    //=> Array.slice(document.querySelectorAll('#se.le[ct=or]'))
+    #x'//x:p[@th]'
+    //=> this.xpath('//x:p[@th]',true)
+    #X'//x:p[@th]'
+    //=> this.xpath('//x:p[@th]')
+    #z'zen+code'
+    //=> this.dom(this.zen('zen+code'))
+
+    p(#<<END)
+      here
+      document
+    END
+    /*=>
+    p(String(<![CDATA[  here
+      document]]>))
+    */
 
 ##tips
 
 ###execution
-- `__` keeps last results. `_` equals `__[0]`.
+- `this` holds various predefined utilities.
+- `__` keeps previous results. `_` equals `__[0]`.
 
 ###invocation
 - Hold _shift_ to target the current page by default.
