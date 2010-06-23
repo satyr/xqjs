@@ -13,6 +13,12 @@ const NS = {
   h: 'http://www.w3.org/1999/xhtml',
   m: 'http://www.w3.org/1998/Math/MathML',
 };
+lazy(this, function ELLIPSIS(){
+  try {
+    return Services.prefs.getComplexValue(
+      'intl.ellipsis', Ci.nsIPrefLocalizedString).data;
+  } catch([]){ return '\u2026' }
+});
 
 var prefs = new Preferences('extensions.xqjs.');
 
@@ -162,7 +168,6 @@ function rescape(s) String(s).replace(/[.?*+^$|()\{\[\\]/g, '\\$&');
 function ellipsize(str, num, end){
   if(num < 1) return '';
   if(str.length <= num) return str;
-  const ELLIPSIS = Preferences.get('intl.ellipsis', '\u2026');
   if(end) return str.slice(0, num - 1) + ELLIPSIS;
   var i = num / 2;
   return str.slice(0, num - i) + ELLIPSIS + str.slice(str.length - i + 1);
