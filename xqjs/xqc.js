@@ -102,7 +102,7 @@ function copy(s)(
         .getService(Ci.nsIClipboardHelper).copyString(s)),
   s);
 function domi(x)(
-  main()[x && x.nodeType ? 'inspectDOMNode' : 'inspectObject'](x), x);
+  main()[x && x.nodeType > 0 ? 'inspectDOMNode' : 'inspectObject'](x), x);
 function fbug(){
   var {Firebug} = main(), args = Array.slice(arguments);
   if(Firebug.Console.isEnabled() && Firebug.toggleBar(true, 'console'))

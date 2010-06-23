@@ -85,8 +85,8 @@ function evaluate(js){
 function sandbox(win){
   var sb = Cu.Sandbox(win);
   for each(let f in utils) sb[f.name] = f;
-  sb.__defineGetter__('main', main);
   sb.ns = NS;
+  sb.__defineGetter__('main', main);
   sb.win = unwrap(win);
   sb.doc = unwrap(win.document);
   sb.__ = __;
