@@ -132,19 +132,19 @@ function say(x){
   inputField.scrollTop = 0;
   return x;
 }
-function xpath(xp, doc, one){
-  if(typeof doc !== 'object') one = doc, doc = target.win.document;
-  var r = doc.evaluate(
-    xp, doc, function([c]) NS[c], XPathResult.ANY_TYPE, null);
+function xpath(xp, node, one){
+  if(typeof node !== 'object') one = node, node = target.win.document;
+  var r = (node.ownerDocument || node)
+    .evaluate(xp, node, function nsr([c]) NS[c], XPathResult.ANY_TYPE, null);
   switch(r.resultType){
-    case r.STRING_TYPE: return r.stringValue;
-    case r.NUMBER_TYPE: return r.numberValue;
-    case r.BOOLEAN_TYPE: return r.booleanValue;
     case r.UNORDERED_NODE_ITERATOR_TYPE:
     if(one) return r.iterateNext();
     let a = [], n;
     while((n = r.iterateNext())) a.push(n);
     return a;
+    case r.STRING_TYPE: return r.stringValue;
+    case r.NUMBER_TYPE: return r.numberValue;
+    case r.BOOLEAN_TYPE: return r.booleanValue;
   }
 }
 function dom(o, doc) unwrap(node(o, doc || target.win.document));
