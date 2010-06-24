@@ -15,6 +15,18 @@ is a simple JavaScript console for [Firefox](http://firefox.com) that:
   and [key](https://developer.mozilla.org/en/XUL/key)
   [customization](http://www.json.org).
 
+##usage
+
+###invocation
+- _Alt+(Shift)+X_ (default)
+  - Holding _Shift_ targets the current content instead of the browser chrome.
+- Tools -> xqjs
+- chrome://xqjs/content
+
+###execution
+- `this` holds various predefined utilities.
+- `__` keeps previous results. `_` equals `__[0]`.
+
 ##default macros
     #{x} //=> f(x,y,z){return x}
     #(x) //=> f(x,y,z)(x)
@@ -38,13 +50,3 @@ is a simple JavaScript console for [Firefox](http://firefox.com) that:
     p(String(<![CDATA[  here
       document]]>))
     */
-
-##tips
-
-###execution
-- `this` holds various predefined utilities.
-- `__` keeps previous results. `_` equals `__[0]`.
-
-###invocation
-- Hold _shift_ to target the current page by default.
-- Access __chrome://xqjs/content__ to open it within the browser.
