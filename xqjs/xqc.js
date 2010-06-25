@@ -124,10 +124,10 @@ function lazy(o, fn, p){
   o.__defineGetter__(p, function() o[p] = delete o[p] && fn.call(o));
   return o;
 }
-function keys(x){
+var keys = Object.keys || function keys(x){
   try { var it = x && new Iterator(x, true) } catch([]){ return [] }
   return [k for(k in it)];
-}
+};
 function inspect(x){
   if(x == null) return String(x);
   var t = typeof x;
