@@ -135,7 +135,8 @@ function say(x){
 function xpath(xp, node, one){
   if(typeof node !== 'object') one = node, node = target.win.document;
   var r = (node.ownerDocument || node)
-    .evaluate(xp, node, function nsr([c]) NS[c], XPathResult.ANY_TYPE, null);
+    .evaluate(xp, node, function nsr(x) NS[x] || NS[x[0]],
+              XPathResult.ANY_TYPE, null);
   switch(r.resultType){
     case r.UNORDERED_NODE_ITERATOR_TYPE:
     if(one) return r.iterateNext();

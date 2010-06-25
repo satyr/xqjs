@@ -187,7 +187,7 @@ function zen(code){
   for(let i = -1, l = zs.length; ++i < l; sep = zs[++i]){
     if(!name.test(zs[i])) continue;
     let ns = RegExp.$1, lm = <{RegExp.$2}/>, n = 1;
-    if(ns) lm.setNamespace(NS[ns[0]]);
+    if(ns) lm.setNamespace(NS[ns] || NS[ns[0]]);
     for(let _, m; char.test(_ = RegExp.rightContext);) switch(_[0]){
       case '#': lm.@id = ident(_) || '';
       break;
