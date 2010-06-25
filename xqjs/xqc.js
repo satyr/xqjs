@@ -3,6 +3,7 @@ try { Cu.import('resource://gre/modules/Services.jsm') }
 catch([]){ Cu.import('resource://xqjs/Services.jsm') }
 Cu.import('resource://xqjs/Preferences.jsm');
 
+const PREF_ROOT = 'extensions.xqjs.';
 const O2S = Object.prototype.toString;
 const NS = {
   x: 'http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul',
@@ -20,8 +21,9 @@ lazy(this, function ELLIPSIS(){
   } catch([]){ return '\u2026' }
 });
 
-var prefs = new Preferences('extensions.xqjs.');
+var prefs = new Preferences(PREF_ROOT);
 
+function q(id) document.getElementById(id);
 function qs(s) document.querySelector(s);
 function qsa(s) Array.slice(document.querySelectorAll(s));
 function lmn() node(Array.slice(arguments), document);
@@ -190,6 +192,7 @@ function ellipsize(str, num, end){
   var i = num / 2;
   return str.slice(0, num - i) + ELLIPSIS + str.slice(str.length - i + 1);
 }
+function surl(type, code) 'data:'+ type +';charset=utf-8,'+ encodeURI(code);
 
 function zen(code){
   var name = /(?:([\w$]*)\|)?([A-Za-z_][-.\w]*)/;

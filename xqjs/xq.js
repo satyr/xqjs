@@ -8,7 +8,7 @@ var __ = [], cur = 0, utils =
  function Coffee() Cu.import('resource://xqjs/coffee.jsm', null).CoffeeScript,
  ].reduce(lazy, this);
 
-{ let apop = qs('#Actions').appendChild(lmn('menupopup'));
+{ let apop = q('Actions').appendChild(lmn('menupopup'));
   for each(let key in qsa('key')){
     let {id} = key, json = prefs.get(id, '{}'), atrs;
     try { atrs = JSON.parse(json) } catch(e){
@@ -79,7 +79,7 @@ function evaluate(js){
     target.chrome
     ? 'with(win) eval('+ uneval(js) +')'
     : ((sb.__proto__ = sb.win), js),
-    sb, 1.8, 'data:xqjs;charset=utf-8,'+ encodeURI(js));
+    sb, 1.8, surl('xqjs', js), 1);
 }
 function sandbox(win){
   var sb = Cu.Sandbox(win);
@@ -89,15 +89,11 @@ function sandbox(win){
   sb.win = unwrap(win);
   sb.doc = unwrap(win.document);
   sb.__ = __;
-  try {
-    Services.scriptloader.loadSubScript(prefs.get('userjs'), sb);
-  } catch(e){ Cu.reportError(e) }
+  preval('userjs', sb);
   return sb;
 }
 function macload(){
-  try {
-    var m = Cu.evalInSandbox(prefs.get('macros', ''), Cu.Sandbox(this), 1.8);
-  } catch(e){ Cu.reportError(e) }
+  var m = preval('macros', Cu.Sandbox(this));
   if(!m) m = String;
   else if(typeof m !== 'function'){
     let maclist = [[RegExp(k, 'g'), v] for([k, v] in Iterator(m))];
@@ -107,6 +103,15 @@ function macload(){
     };
   }
   self.macrun = m;
+}
+function preval(key, sb){
+  var js = prefs.get(key).trim();
+  if(js) try {
+    return (
+      /^\w+:\/\/\S+$/.test(js)
+      ? Services.scriptloader.loadSubScript(js, sb)
+      : Cu.evalInSandbox(js, sb, 1.8, surl('xq'+ key, js), 1));
+  } catch(e){ Cu.reportError(e) }
 }
 
 function p(x)(say(inspect(x)), x);
@@ -168,7 +173,7 @@ function expand(s){
 }
 function cofferr(src, msg, lno, cno){
   let se = Cc['@mozilla.org/scripterror;1'].createInstance(Ci.nsIScriptError);
-  se.init(say('coffee: '+ msg), 'data:coffee;charset=utf-8,'+ encodeURI(src),
+  se.init(say('coffee: '+ msg), surl('coffee', src),
           src.split(/\r?\n/, lno).pop(), lno, cno, se.errorFlag, null);
   Services.console.logMessage(se);
 }

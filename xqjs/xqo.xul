@@ -2,12 +2,20 @@
 <dialog xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
  id="xqo" title="xqjs options" width="600" height="500"
  persist="width,height,screenX,screenY" buttons="accept">
- <label control="macros" value="Macros" accesskey="M"/>
- <textbox id="macros" multiline="true" flex="1"/>
+ <grid>
+  <columns><column/><column flex="1"/></columns>
+  <rows id="js">
+   <row align="baseline">
+    <label control="macros" value="Macros" accesskey="M"/>
+    <textbox id="macros"/>
+   </row>
+   <row align="baseline">
+    <label control="userjs" value="User JS" accesskey="U"/>
+    <textbox id="userjs"/>
+   </row>
+  </rows>
+ </grid>
  <hbox align="baseline">
-  <label control="userjs" value="User JS" accesskey="U"/>
-  <textbox id="userjs" flex="1"/>
-  <button label="Pick" accesskey="P" oncommand="piq()"/>
  </hbox>
  <groupbox>
   <caption><label value="Keys" class="text-link"

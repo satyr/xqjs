@@ -1,19 +1,11 @@
-const PREF_ROOT = 'extensions.xqjs.';
-const DEFAULT_MACROS = String(<![CDATA[({
-  '#(?=[({])': 'function f(x,y,z)',
-  '#<<(\\w+)(.*)\\n([^]*?)(?:\\n\\1\\b|$)': 'String(<![CDATA[$3]]\>)$2',
-  "#[axXz]?('.*?')": function selector($, q){
-    switch($[1]){
-      case 'a': return 'Array.slice(document.querySelectorAll('+ q +'))';
-      case 'x': var one = 1;
-      case 'X': return 'this.xpath('+ q +','+ ~~one +')';
-      case 'z': return 'this.dom(this.zen('+ q +'))';
-    }
-    return 'document.querySelector('+ q +')';
-  },
-})]]>);
-
-{ let parent = qs('#keys'), i = 0;
+for each(let id in ['macros', 'userjs']){
+  let tb = q(id);
+  tb.value = prefs.get(id);
+  tb.parentNode.appendChild(lmn('hbox', [
+    ['button', {label: 'Pick', oncommand: 'pq("'+ id +'")'}],
+    ['button', {label: 'View', oncommand: 'vu("'+ id +'")'}]]));
+}
+{ let parent = q('keys'), i = 0;
   for each(let pref in Services.prefs.getChildList(PREF_ROOT +'key', {})){
     let id = pref.slice(PREF_ROOT.length);
     let row = parent.appendChild(lmn('row', {align: 'baseline'}));
@@ -26,19 +18,14 @@ const DEFAULT_MACROS = String(<![CDATA[({
   }
 }
 
-function onload(){
-  qs('#macros').value = prefs.get('macros') || DEFAULT_MACROS;
-  qs('#userjs').value = prefs.get('userjs') || 'resource://xqjs/xqu.js';
-}
+function onload(){}
 function onunload(){
   for each(let tb in qsa('.key')) prefs.set(tb.id, tb.value);
-  prefs.set({
-    macros: qs('#macros').value || DEFAULT_MACROS,
-    userjs: qs('#userjs').value || 'resource://xqjs/xqu.js',
-  });
+  for each(let id in ['macros', 'userjs']) prefs.set(id, q(id).value);
 }
 
-function piq(){
+function pq(id){
   var file = pick('Open', {JS: '*.js'});
-  if(file) qs('#userjs').value = furl(file);
+  if(file) q(id).value = furl(file);
 }
+function vu(id) hurl('view-source:'+ q(id).value);
