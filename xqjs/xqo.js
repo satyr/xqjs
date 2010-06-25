@@ -1,9 +1,10 @@
 for each(let id in ['macros', 'userjs']){
   let tb = q(id);
   tb.value = prefs.get(id);
-  tb.parentNode.appendChild(lmn('hbox', [
+  tb.parentNode.appendChild(lmn('hbox', {class: 'buttons'}, [
     ['button', {label: 'Pick', oncommand: 'pq("'+ id +'")'}],
-    ['button', {label: 'View', oncommand: 'vu("'+ id +'")'}]]));
+    ['button', {label: 'View', oncommand: 'vu("'+ id +'")'}],
+    ['button', {label: 'Reset', oncommand: 'rst("'+ id +'")'}]]));
 }
 { let parent = q('keys'), i = 0;
   for each(let pref in Services.prefs.getChildList(PREF_ROOT +'key', {})){
@@ -29,3 +30,7 @@ function pq(id){
   if(file) q(id).value = furl(file);
 }
 function vu(id) hurl('view-source:'+ q(id).value);
+function rst(id){
+  prefs.reset(id);
+  q(id).value = prefs.get(id);
+}
