@@ -179,16 +179,19 @@ function ellipsize(str, num, end){
 }
 
 function zen(code){
-  var word = /[-\w$]+/, char = /^[^]/, digits = /\d+/;
-  var kv = /([-\w$]+)(?:=([^\]]*))?\]?/, content = /{([^\}]*)}?/;
+  var name = /(?:([\w$]*)\|)?([A-Za-z_][-.\w]*)/;
+  var ident = /-?(?![\d-])[-\w\xA1-\uFFFF]+/, char = /^[^]/, digits = /\d+/;
+  var kv = /([A-Za-z_][-.\w]*)(?:=([^\]]*))?\]?/, content = /{([^\}]*)}?/;
   var zs = code.trim().split(/\s{0,}([>+])\s{0,}/);
   var root = <_/>, curs = [root], sep;
-  for(let i = -1, l = zs.length; ++i < l; sep = zs[++i]) if(word.test(zs[i])){
-    let lm = <{RegExp.lastMatch}/>, n = 1;
+  for(let i = -1, l = zs.length; ++i < l; sep = zs[++i]){
+    if(!name.test(zs[i])) continue;
+    let ns = RegExp.$1, lm = <{RegExp.$2}/>, n = 1;
+    if(ns) lm.setNamespace(NS[ns[0]]);
     for(let _, m; char.test(_ = RegExp.rightContext);) switch(_[0]){
-      case '#': lm.@id = word(_) || '';
+      case '#': lm.@id = ident(_) || '';
       break;
-      case '.': lm.@class += (lm.@class +'' && ' ') + (word(_) || '');
+      case '.': lm.@class += ('@class' in lm ? ' ' : '') + (ident(_) || '');
       break;
       case '[': if((m = kv(_))) lm['@'+ m[1]] = m[2] || '';
       break;
