@@ -2,8 +2,7 @@ var __ = [], cur = 0, utils =
 [p, say, target, hurl,
  log, copy, domi, fbug,
  dom, zen, xmls, xpath,
- type, keys, unwrap,
- sum, last];
+ type, keys, unwrap];
 
 [function bin() JSON.parse(prefs.get('history', '[]')),
  function CoffeeScript() Cu.import('resource://xqjs/coffee.jsm').CoffeeScript,
@@ -56,7 +55,7 @@ function onunload(){
 function target(win){
   target.win = win = win && win.document ? win : opener || self;
   target.chrome = chromep(win);
-  target.sb = sandbox(win);
+  lazy(target, function sb() sandbox(this.win));
   document.documentElement.setAttribute('target', win.location);
   document.title = 'xqjs'+ (win === self ? '' : ': '+ fmtitle(win));
   return win;
@@ -98,6 +97,7 @@ function sandbox(win){
     ignoreComments: false,
     ignoreProcessingInstructions: false,
   });
+  Services.scriptloader.loadSubScript('resource://xqjs/xqu.js', sb);
   return sb;
 }
 function macload(){
