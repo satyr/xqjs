@@ -5,7 +5,7 @@ var __ = [], cur = 0, utils =
  type, keys, unwrap];
 
 [function bin() JSON.parse(prefs.get('history', '[]')),
- function CoffeeScript() Cu.import('resource://xqjs/coffee.jsm').CoffeeScript,
+ function Coffee() Cu.import('resource://xqjs/coffee.jsm', null).CoffeeScript,
  ].reduce(lazy, this);
 
 { let apop = qs('#Actions').appendChild(lmn('menupopup'));
@@ -89,15 +89,9 @@ function sandbox(win){
   sb.win = unwrap(win);
   sb.doc = unwrap(win.document);
   sb.__ = __;
-  sb.Number.prototype.__iterator__ = function numit(){
-    if(this < 0) for(var i = -this; --i >= 0;) yield i;
-    else for(i = -1; ++i < this;) yield i;
-  };
-  sb.XML.setSettings({
-    ignoreComments: false,
-    ignoreProcessingInstructions: false,
-  });
-  Services.scriptloader.loadSubScript('resource://xqjs/xqu.js', sb);
+  try {
+    Services.scriptloader.loadSubScript(prefs.get('userjs'), sb);
+  } catch(e){ Cu.reportError(e) }
   return sb;
 }
 function macload(){
@@ -164,7 +158,7 @@ function expand(s){
     return '';
   }
   if(coffee.checked) try {
-    s = CoffeeScript.compile(s, {no_wrap: true});
+    s = Coffee.compile(s, {no_wrap: true});
   } catch(e){
     if(/ on line (\d+)/.test(e.message)) cofferr(s, e.message, +RegExp.$1);
     else Cu.reportError(e);
@@ -223,19 +217,14 @@ function wordig(re){
 }
 
 function fillwin(menu){
-  function each(fn, nmr, ifc){
-    while(nmr.hasMoreElements()) try {
-      fn(nmr.getNext().QueryInterface(ifc));
-    } catch(e){ Cu.reportError(e) }
-  }
   const {nsIXULWindow, nsIDocShell} = Ci;
-  const DS_TYPE = Ci.nsIDocShellTreeItem['type'+ menu.parentNode.id];
-  const DS_DIR  = nsIDocShell.ENUMERATE_FORWARDS;
+  const DS_TYP = Ci.nsIDocShellTreeItem['type'+ menu.parentNode.id];
+  const DS_DIR = nsIDocShell.ENUMERATE_FORWARDS;
   const FS = (Cc['@mozilla.org/browser/favicon-service;1']
               .getService(Ci.nsIFaviconService));
   var len = 0;
-  each(function(xw){
-    each(function(ds){
+  enumerate(function(xw){
+    enumerate(function(ds){
       var doc = (ds.contentViewer || 0).DOMDocument;
       if(!doc || doc.location.href === 'about:blank') return;
       var win = doc.defaultView, label = fmtitle(win);
@@ -249,7 +238,7 @@ function fillwin(menu){
       }
       mi.setAttribute('label', label);
       menu.appendChild(mi).win = win;
-    }, xw.docShell.getDocShellEnumerator(DS_TYPE, DS_DIR), nsIDocShell);
+    }, xw.docShell.getDocShellEnumerator(DS_TYP, DS_DIR), nsIDocShell);
   }, Services.wm.getXULWindowEnumerator(null), nsIXULWindow);
   len || menu.appendChild(lmn('menuitem', {label: '-', disabled: true}));
 }

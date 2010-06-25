@@ -1,14 +1,18 @@
 <?xml-stylesheet href="chrome://global/skin"?>
 <dialog xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
  id="xqo" title="xqjs options" width="600" height="500"
- persist="width,height,screenX,screenY"
- buttons="accept">
- <label control="macros" value="Macro" accesskey="M"/>
+ persist="width,height,screenX,screenY" buttons="accept">
+ <label control="macros" value="Macros" accesskey="M"/>
  <textbox id="macros" multiline="true" flex="1"/>
+ <hbox align="baseline">
+  <label control="userjs" value="User JS" accesskey="U"/>
+  <textbox id="userjs" flex="1"/>
+  <button label="Pick" accesskey="P" oncommand="piq()"/>
+ </hbox>
  <groupbox>
   <caption><label value="Keys" class="text-link"
    tooltiptext="https://developer.mozilla.org/en/XUL/key"
-   onclick="if(event.button!==2)return!hurl(this.tooltipText)"
+   onclick="if(event.button !== 2) return !hurl(this.tooltipText)"
    /></caption>
   <grid>
    <columns><column/><column flex="1"/></columns>

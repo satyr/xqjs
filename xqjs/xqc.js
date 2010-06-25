@@ -84,6 +84,7 @@ function fmnodes(ns)
 
 function main() Services.wm.getMostRecentWindow('navigator:browser');
 function hurl() let(b = main().gBrowser) b.addTab.apply(b, arguments);
+
 function chromep(win){
   try { return !!Cu.evalInSandbox('Components.utils', Cu.Sandbox(win)) }
   catch([]){ return false }
@@ -96,12 +97,31 @@ function fmtitle(win){
   ttl = ellipsize(ttl, LEN/2, true);
   return ttl + ' <'+ ellipsize(url, LEN - ttl.length) +'>';
 }
+function enumerate(fn, nm, ci){
+  ci = Ci[ci];
+  while(nm.hasMoreElements()) try {
+    fn.call(this, nm.getNext().QueryInterface(ci));
+  } catch(e){ Cu.reportError(e) }
+  return this;
+}
+lazy(this, function furl()(
+  Services.io.getProtocolHandler('file')
+  .QueryInterface(Ci.nsIFileProtocolHandler).getURLSpecFromFile));
 
 function log(s)(Services.console.logStringMessage('xqjs: '+ s), s);
 function copy(s)(
   s && (Cc['@mozilla.org/widget/clipboardhelper;1']
         .getService(Ci.nsIClipboardHelper).copyString(s)),
   s);
+function pick(mode, filters){
+  const IFP = Ci.nsIFilePicker;
+  var fp = Cc['@mozilla.org/filepicker;1'].createInstance(IFP);
+  fp.init(self, mode = mode || 'Open', IFP['mode'+ mode]);
+  if(filters) for(let [t, f] in Iterator(filters)) fp.appendFilter(t, f);
+  fp.appendFilters(IFP.filterAll);
+  return fp.show() === IFP.returnCancel ? null :
+    fp.file || enumerate.call([], [].push, fp.files, 'nsIFile');
+}
 function domi(x)(
   main()[x instanceof Node &&
          !(x.compareDocumentPosition(x.ownerDocument) &

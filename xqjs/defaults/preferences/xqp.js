@@ -1,4 +1,5 @@
 pref('extensions.xqjs.macros', '');
+pref('extensions.xqjs.userjs', 'resource://xqjs/xqu.js');
 pref('extensions.xqjs.macros.on', true);
 pref('extensions.xqjs.coffee.on', false);
 pref('extensions.xqjs.history', '[]');

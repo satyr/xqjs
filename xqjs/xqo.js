@@ -27,9 +27,18 @@ const DEFAULT_MACROS = String(<![CDATA[({
 }
 
 function onload(){
-  qs('#macros').value = prefs.get('macros', '') || DEFAULT_MACROS;
+  qs('#macros').value = prefs.get('macros') || DEFAULT_MACROS;
+  qs('#userjs').value = prefs.get('userjs') || 'resource://xqjs/xqu.js';
 }
 function onunload(){
   for each(let tb in qsa('.key')) prefs.set(tb.id, tb.value);
-  prefs.set('macros', qs('#macros').value || DEFAULT_MACROS);
+  prefs.set({
+    macros: qs('#macros').value || DEFAULT_MACROS,
+    userjs: qs('#userjs').value || 'resource://xqjs/xqu.js',
+  });
+}
+
+function piq(){
+  var file = pick('Open', {JS: '*.js'});
+  if(file) qs('#userjs').value = furl(file);
 }
