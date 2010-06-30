@@ -163,7 +163,7 @@ function expand(s){
     return '';
   }
   if(coffee.checked) try {
-    s = Coffee.compile(s, {no_wrap: true});
+    s = Coffee.compile(s, {noWrap: true});
   } catch(e){
     if(/ on line (\d+)/.test(e.message)) cofferr(s, e.message, +RegExp.$1);
     else Cu.reportError(e);
