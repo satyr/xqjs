@@ -20,7 +20,7 @@
   <menu id="Actions" label="Actions" accesskey="A"/>
  </menubar>
  <textbox id="code" multiline="true" flex="1"/>
- <hbox align="baseline">
+ <hbox id="controls" align="baseline">
   <label control="code" value="Code&#x2191;" accesskey="C"/>
   <label control="results" value="Results&#x2193;" accesskey="R"/>
   <checkbox id="macros" label="Macro"  accesskey="M"/>
