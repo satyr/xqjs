@@ -5,6 +5,7 @@ var __ = [], cur = 0, root = document.documentElement, utils =
  type, keys, unwrap];
 
 [function bin() JSON.parse(prefs.get('history', '[]')),
+ function macrun() macload(),
  function Coffee() Cu.import('resource://xqjs/coffee.jsm', null).CoffeeScript,
  ].reduce(lazy, this);
 
@@ -39,7 +40,6 @@ function onload(){
       onpopupshowing: 'fillwin(this)',
       onpopuphidden: 'empty(this)',
     }));
-  macload();
   code.focus();
 }
 function onunload(){
@@ -90,24 +90,18 @@ function sandbox(win){
   return sb;
 }
 function macload(){
-  var m = preval('macros', Cu.Sandbox(this));
-  if(!m) m = String;
-  else if(typeof m != 'function'){
-    let maclist = [[RegExp(k, 'g'), v] for([k, v] in Iterator(m))];
-    m = function macrun(s){
-      for each(let [re, xp] in maclist) s = s.replace(re, xp);
-      return s;
-    };
-  }
-  self.macrun = m;
+  var m = preval('macros', Cu.Sandbox(this)) || String;
+  if(typeof m == 'function') return m;
+  m = [[RegExp(k, 'g'), v] for([k, v] in Iterator(m))];
+  return function mac(s) m.reduce(function(s, [re, xp]) s.replace(re, xp), s);
 }
-function preval(key, sb){
-  var js = prefs.get(key).trim();
+function preval(id, sb){
+  var js = prefs.get(id).trim();
   if(js) try {
     return (
       /^\w+:\/\/\S+$/.test(js)
       ? Services.scriptloader.loadSubScript(js, sb)
-      : Cu.evalInSandbox(js, sb, 1.8, sourl('xq'+ key, js), 1));
+      : Cu.evalInSandbox(js, sb, 1.8, sourl('xq'+ id, js), 1));
   } catch(e){ Cu.reportError(e) }
 }
 
@@ -154,7 +148,7 @@ function dom(o, doc) unwrap(node(o, doc || target.win.document));
 function copand() say(copy(expand(code.value)));
 function options(){
   showModalDialog('xqo.xul', 1, 'resizable=1');
-  macload();
+  lazy(self, macload, 'macrun');
 }
 function reload() opener ? opener.xqjs(target.win) : location.reload();
 
