@@ -139,11 +139,10 @@ function clip(x)(
 lazy(clip, function board()
      Cc['@mozilla.org/widget/clipboard;1'].getService(Ci.nsIClipboard));
 clip.dic = {txt: 'text/unicode', htm: 'text/html', img: 'image/png'};
-clip.get = function clipget(flavor){
+clip.get = function clipget(flavors){
   const {board, dic} = clip, GC = board.kGlobalClipboard;
-  return (1 in arguments
-          ? Array.map(arguments, get)
-          : type(flavor) == 'Array' ? flavor.map(get) : get(flavor));
+  var rs = Array.map(1 in arguments ? arguments : [].concat(flavors), get);
+  return 1 in rs ? rs : rs[0];
   function get(flv){
     flv = dic[flv] || flv;
     if(!board.hasDataMatchingFlavors([flv], 1, GC)) return '';
@@ -176,10 +175,10 @@ clip.set = function clipset(kv){ // {txt: 't', htm: '<b>t</b>'}
   return kv;
 };
 for(let key in clip.dic) let(k = key)(
-  clip.__defineGetter__(k, function() clip.get(k)));
-clip.__defineSetter__('txt', function(t) clip.set({txt: v}));
+  clip.__defineGetter__(k, function() this.get(k)));
+clip.__defineSetter__('txt', function(t) this.set({txt: t}));
 clip.__defineSetter__('htm', function(h){
-  clip.set(h instanceof HTMLElement ? {
+  this.set(h instanceof HTMLElement ? {
     txt: h.textContent,
     htm: xmls(h.cloneNode(false)).replace('><', function() h.innerHTML),
   } : {txt: h, htm: h});
