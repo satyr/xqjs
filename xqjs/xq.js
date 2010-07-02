@@ -1,6 +1,6 @@
 var __ = [], cur = 0, root = document.documentElement, utils =
 [p, say, err, target,
- log, copy, hurl, domi, fbug,
+ log, clip, hurl, domi, fbug,
  dom, zen, xmls, xpath,
  type, keys, unwrap];
 
@@ -144,7 +144,7 @@ function xpath(xp, node, one){
 }
 function dom(o, doc) unwrap(node(o, doc || target.win.document));
 
-function copand() say(copy(expand(code.value)));
+function copand() say(clip(expand(code.value)));
 function options(){
   showModalDialog('xqo.xul', 1, 'resizable=1');
   lazy(self, macload, 'macrun');

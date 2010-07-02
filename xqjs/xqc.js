@@ -111,10 +111,6 @@ lazy(this, function furl()(
   .QueryInterface(Ci.nsIFileProtocolHandler).getURLSpecFromFile));
 
 function log(s)(Services.console.logStringMessage('xqjs: '+ s), s);
-function copy(s)(
-  s && (Cc['@mozilla.org/widget/clipboardhelper;1']
-        .getService(Ci.nsIClipboardHelper).copyString(s)),
-  s);
 function pick(mode, filters){
   const IFP = Ci.nsIFilePicker;
   var fp = Cc['@mozilla.org/filepicker;1'].createInstance(IFP);
@@ -136,6 +132,71 @@ function fbug(){
     Firebug.Console.logFormatted(args);
   return args.length > 1 ? args : args[0];
 }
+function clip(x)(
+  x == null ? clip.img || clip.htm || clip.txt :
+  clip[x instanceof HTMLImageElement ? 'img' :
+       x instanceof HTMLElement ? 'htm' : 'txt'] = x);
+lazy(clip, function board()
+     Cc['@mozilla.org/widget/clipboard;1'].getService(Ci.nsIClipboard));
+clip.dic = {txt: 'text/unicode', htm: 'text/html', img: 'image/png'};
+clip.get = function clipget(flavor){
+  const {board, dic} = clip, GC = board.kGlobalClipboard;
+  return (1 in arguments
+          ? Array.map(arguments, get)
+          : type(flavor) == 'Array' ? flavor.map(get) : get(flavor));
+  function get(flv){
+    flv = dic[flv] || flv;
+    if(!board.hasDataMatchingFlavors([flv], 1, GC)) return '';
+    var dat = {}, xfer = (Cc['@mozilla.org/widget/transferable;1']
+                          .createInstance(Ci.nsITransferable));
+    xfer.addDataFlavor(flv);
+    board.getData(xfer, GC);
+    xfer.getTransferData(flv, dat, {});
+    if(~flv.lastIndexOf('text/', 0))
+      return dat.value.QueryInterface(Ci.nsISupportsString).data;
+    var bis = (Cc['@mozilla.org/binaryinputstream;1']
+               .createInstance(Ci.nsIBinaryInputStream));
+    bis.setInputStream(dat.value.QueryInterface(Ci.nsIInputStream));
+    return 'data:'+ flv +';base64,'+
+      btoa(String.fromCharCode.apply(0, bis.readByteArray(bis.available())));
+  }
+};
+clip.set = function clipset(kv){ // {txt: 't', htm: '<b>t</b>'}
+  const {board, dic} = clip;
+  const xfer = (Cc['@mozilla.org/widget/transferable;1']
+                .createInstance(Ci.nsITransferable));
+  for(let [flv, val] in Iterator(kv)){
+    let ss = (Cc['@mozilla.org/supports-string;1']
+              .createInstance(Ci.nsISupportsString));
+    ss.data = String(val);
+    xfer.addDataFlavor(flv = dic[flv] || flv);
+    xfer.setTransferData(flv, ss, ss.data.length * 2);
+  }
+  board.setData(xfer, null, board.kGlobalClipboard);
+  return kv;
+};
+for(let key in clip.dic) let(k = key)(
+  clip.__defineGetter__(k, function() clip.get(k)));
+clip.__defineSetter__('txt', function(t) clip.set({txt: v}));
+clip.__defineSetter__('htm', function(h){
+  clip.set(h instanceof HTMLElement ? {
+    txt: h.textContent,
+    htm: xmls(h.cloneNode(false)).replace('><', function() h.innerHTML),
+  } : {txt: h, htm: h});
+});
+clip.__defineSetter__('img', function(i){
+  i instanceof HTMLImageElement || (i = let(img = Image())(img.src = i, img));
+  i.complete ? cic.call(i) : i.addEventListener('load', cic, false);
+  function cic(){
+    this.removeEventListener('load', cic, false);
+    const CIC = 'cmd_copyImageContents';
+    var doc = main().document, pop = doc.popupNode;
+    doc.popupNode = this;
+    with(doc.commandDispatcher.getControllerForCommand(CIC))
+      isCommandEnabled(CIC) && doCommand(CIC);
+    doc.popupNode = pop;
+  }
+});
 
 var unwrap = XPCNativeWrapper.unwrap || function unwrap(x){
   try { return new XPCNativeWrapper(x).wrappedJSObject } catch([]){ return x }
