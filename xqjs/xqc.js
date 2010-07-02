@@ -193,6 +193,9 @@ function ellipsize(str, num, end){
   return str.slice(0, num - i) + ELLIPSIS + str.slice(str.length - i + 1);
 }
 function sourl(type, code) 'data:'+ type +';charset=utf-8,'+ encodeURI(code);
+function insert(editor, s)(
+  editor.QueryInterface(Ci.nsIPlaintextEditor).insertText(s),
+  editor);
 
 function zen(code){
   var name = /(?:([\w$]*)\|)?([A-Za-z_][-.\w]*)/;

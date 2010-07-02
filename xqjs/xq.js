@@ -117,8 +117,7 @@ function say(x){
     say.last = s, say.dup = 1, say.pad = 0;
     t = s +'\n';
   }
-  editor.QueryInterface(Ci.nsIPlaintextEditor).insertText(t);
-  editor.beginningOfDocument();
+  insert(editor, t).beginningOfDocument();
   inputField.scrollTop = 0;
   return x;
 }
@@ -188,24 +187,20 @@ function save(s){
 }
 
 function complete(){
-  var pos = code.selectionStart, abr = /[\w$]*$/(code.value.slice(0, pos))[0];
-  if(!abr) return;
-  if(pos === complete.pos && ~abr.lastIndexOf(complete.abr, 0)){
-    pos -= abr.length - complete.abr.length;
-    var {gen, abr} = complete;
-  }
-  gen = gen || wordig(RegExp('\\b'+ rescape(abr) +'[\\w$]+', 'g'));
-  try { var word = gen.next() } catch(e if e === StopIteration){}
-  code.selectionStart = pos;
-  if(word)
-    code.editor.QueryInterface(Ci.nsIPlaintextEditor)
-      .insertText(word.slice(abr.length));
-  else if(complete.gen)
-    code.editor.deleteSelection(code.editor.ePrevious);
-  [complete.pos, complete.gen, complete.abr] =
-    word ? [code.selectionStart, gen, abr] : [];
+  var {fit} = complete, pos = code.selectionStart;
+  if(fit && fit === code.value.slice(pos - fit.length, pos)){
+    var {abr, gen} = complete;
+    code.selectionStart = pos - fit.length + abr.length;
+  } else if(/[\w$]+[^\w$]*$/.test(code.value.slice(0, pos))){
+    complete.abr = abr = RegExp.lastMatch;
+    gen = dig(RegExp('\\b'+ rescape(abr) +'[\\w$]+', 'g'));
+  } else return;
+  try { fit = gen.next() } catch(e if e === StopIteration){ fit = '' }
+  if(fit) insert(code.editor, fit.slice(abr.length));
+  else if(complete.fit) code.editor.deleteSelection(code.editor.ePrevious);
+  complete.gen = (complete.fit = fit) && gen;
 }
-function wordig(re){
+function dig(re){
   var word, dic = {__proto__: null};
   for(var s in new function(){
     yield results.value;
