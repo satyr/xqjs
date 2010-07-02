@@ -18,6 +18,17 @@
   <menu id="Chrome" label="Chrome" accesskey="h"/>
   <menu id="Content" label="Content" accesskey="o"/>
   <menu id="Actions" label="Actions" accesskey="A"/>
+  <menu id="Links" label="Links" accesskey="L"
+   oncommand="hurl('http://'+event.target.tooltiptext)">
+   <menupopup>
+    <menuitem label="Readme" accesskey="R" class="menuitem-iconic"
+     tooltiptext="github.com/satyr/xqjs#readme"
+     image="http://github.com/favicon.ico"/>
+    <menuitem label="CoffeeScript" accesskey="C" class="menuitem-iconic"
+     tooltiptext="coffeescript.org"
+     image="http://coffeescript.org/documentation/images/favicon.ico"/>
+   </menupopup>
+  </menu>
  </menubar>
  <textbox id="code" multiline="true" flex="1"/>
  <hbox id="controls" align="baseline">
