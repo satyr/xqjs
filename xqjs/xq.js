@@ -1,6 +1,6 @@
-var __ = [], cur = 0, utils =
-[p, say, target, hurl,
- log, copy, domi, fbug,
+var __ = [], cur = 0, root = document.documentElement, utils =
+[p, say, err, target,
+ log, copy, hurl, domi, fbug,
  dom, zen, xmls, xpath,
  type, keys, unwrap];
 
@@ -61,14 +61,11 @@ function target(win){
   return win;
 }
 function execute(){
-  var js = expand(save(code.value)), cn = '';
+  root.className = '';
+  var js = expand(save(code.value));
   if(js){
-    try { var r = p(evaluate(js)) } catch(e){
-      Cu.reportError(r = say(e));
-      cn = 'error';
-    }
+    try { var r = p(evaluate(js)) } catch(e){ r = err(e) }
     r === __[0] || __.unshift(r);
-    document.documentElement.className = cn;
   }
   return r;
 }
@@ -131,6 +128,11 @@ function say(x){
   inputField.scrollTop = 0;
   return x;
 }
+function err(e){
+  root.className = 'error';
+  if(e) Cu.reportError(say(e));
+  return e;
+}
 function xpath(xp, node, one){
   if(typeof node != 'object') one = node, node = target.win.document;
   var r = (node.ownerDocument || node)
@@ -158,22 +160,18 @@ function reload() opener ? opener.xqjs(target.win) : location.reload();
 
 function expand(s){
   if(!s) return '';
-  if(macros.checked) try { s = macrun(s) } catch(e){
-    Cu.reportError(say(e));
-    return '';
-  }
-  if(coffee.checked) try {
-    s = Coffee.compile(s, {noWrap: true});
-  } catch(e){
+  if(macros.checked) try { s = macrun(s) } catch(e){ err(e); return '' }
+  if(coffee.checked) try { s = Coffee.compile(s, {noWrap: true}) } catch(e){
     if(/ on line (\d+)/.test(e.message)) cofferr(s, e.message, +RegExp.$1);
-    else Cu.reportError(e);
+    else err(e);
     return '';
   }
   return s;
 }
 function cofferr(src, msg, lno, cno){
+  err();
   let se = Cc['@mozilla.org/scripterror;1'].createInstance(Ci.nsIScriptError);
-  se.init(say('coffee: '+ msg), surl('coffee', src),
+  se.init(say('coffee: '+ msg), sourl('coffee', src),
           src.split(/\r?\n/, lno).pop(), lno, cno, se.errorFlag, null);
   Services.console.logMessage(se);
 }
