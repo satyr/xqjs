@@ -35,7 +35,7 @@ function node(ls, doc){
     case 'XML': return node4x(ls, doc);
     default: return doc.createTextNode(ls);
   }
-  if(typeof ls[0] !== 'string'){
+  if(typeof ls[0] != 'string'){
     let df = doc.createDocumentFragment();
     for each(let l in ls) df.appendChild(node(l, doc));
     return df;
@@ -142,14 +142,14 @@ var unwrap = XPCNativeWrapper.unwrap || function unwrap(x){
 };
 function type(x) x == null ? '' : O2S.call(x).slice(8, -1);
 function lazy(o, fn, p){
-  if(typeof p !== 'string') p = fn.name;
+  if(typeof p != 'string') p = fn.name;
   o.__defineGetter__(p, function() o[p] = delete o[p] && fn.call(o));
   return o;
 }
-var keys = Object.keys || function keys(x){
-  try { var it = x && new Iterator(x, true) } catch([]){ return [] }
-  return [k for(k in it)];
-};
+function keys(x)(
+  "keys" in Object
+  ? Object.keys(unwrap(Object(x)))
+  : [k for(k in x && new Iterator(unwrap(x), true))]);
 function inspect(x){
   if(x == null) return String(x);
   var t = typeof x;
@@ -179,7 +179,7 @@ function inspect(x){
   if(s == null){
     try { s = String(x) }
     catch(e){ x.__proto__ ? Cu.reportError(e) : t = 'Null' }
-    if(s == null || s === os) s = '{'+ keys(unwrap(x)).join(', ') +'}';
+    if(s == null || s === os) s = '{'+ keys(x).join(', ') +'}';
   }
   return s +'  '+ t;
 }
@@ -192,7 +192,7 @@ function ellipsize(str, num, end){
   var i = num / 2;
   return str.slice(0, num - i) + ELLIPSIS + str.slice(str.length - i + 1);
 }
-function surl(type, code) 'data:'+ type +';charset=utf-8,'+ encodeURI(code);
+function sourl(type, code) 'data:'+ type +';charset=utf-8,'+ encodeURI(code);
 
 function zen(code){
   var name = /(?:([\w$]*)\|)?([A-Za-z_][-.\w]*)/;

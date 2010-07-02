@@ -46,7 +46,7 @@ function onunload(){
   save(code.value);
   bin.length = Math.min(bin.length, prefs.get('history.max'));
   prefs.set({
-    'history': JSON.stringify(bin),
+    history: JSON.stringify(bin),
     'macros.on': macros.checked,
     'coffee.on': coffee.checked,
   });
@@ -56,7 +56,7 @@ function target(win){
   target.win = win = win && win.document ? win : opener || self;
   target.chrome = chromep(win);
   lazy(target, function sb() sandbox(this.win));
-  document.documentElement.setAttribute('target', win.location);
+  root.setAttribute('target', win.location);
   document.title = 'xqjs'+ (win === self ? '' : ': '+ fmtitle(win));
   return win;
 }
@@ -79,7 +79,7 @@ function evaluate(js){
     target.chrome
     ? 'with(win) eval('+ uneval(js) +')'
     : ((sb.__proto__ = sb.win), js),
-    sb, 1.8, surl('xqjs', js), 1);
+    sb, 1.8, sourl('xqjs', js), 1);
 }
 function sandbox(win){
   var sb = Cu.Sandbox(win);
@@ -95,7 +95,7 @@ function sandbox(win){
 function macload(){
   var m = preval('macros', Cu.Sandbox(this));
   if(!m) m = String;
-  else if(typeof m !== 'function'){
+  else if(typeof m != 'function'){
     let maclist = [[RegExp(k, 'g'), v] for([k, v] in Iterator(m))];
     m = function macrun(s){
       for each(let [re, xp] in maclist) s = s.replace(re, xp);
@@ -110,7 +110,7 @@ function preval(key, sb){
     return (
       /^\w+:\/\/\S+$/.test(js)
       ? Services.scriptloader.loadSubScript(js, sb)
-      : Cu.evalInSandbox(js, sb, 1.8, surl('xq'+ key, js), 1));
+      : Cu.evalInSandbox(js, sb, 1.8, sourl('xq'+ key, js), 1));
   } catch(e){ Cu.reportError(e) }
 }
 
@@ -132,7 +132,7 @@ function say(x){
   return x;
 }
 function xpath(xp, node, one){
-  if(typeof node !== 'object') one = node, node = target.win.document;
+  if(typeof node != 'object') one = node, node = target.win.document;
   var r = (node.ownerDocument || node)
     .evaluate(xp, node, function nsr(x) NS[x] || NS[x[0]],
               XPathResult.ANY_TYPE, null);
@@ -222,7 +222,7 @@ function wordig(re){
 }
 
 function fillwin(menu){
-  const {nsIXULWindow, nsIDocShell} = Ci;
+  const {nsIDocShell} = Ci;
   const DS_TYP = Ci.nsIDocShellTreeItem['type'+ menu.parentNode.id];
   const DS_DIR = nsIDocShell.ENUMERATE_FORWARDS;
   const FS = (Cc['@mozilla.org/browser/favicon-service;1']
@@ -244,6 +244,6 @@ function fillwin(menu){
       mi.setAttribute('label', label);
       menu.appendChild(mi).win = win;
     }, xw.docShell.getDocShellEnumerator(DS_TYP, DS_DIR), nsIDocShell);
-  }, Services.wm.getXULWindowEnumerator(null), nsIXULWindow);
+  }, Services.wm.getXULWindowEnumerator(null), Ci.nsIXULWindow);
   len || menu.appendChild(lmn('menuitem', {label: '-', disabled: true}));
 }
