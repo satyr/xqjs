@@ -24,6 +24,9 @@
     <menuitem label="Readme" accesskey="R" class="menuitem-iconic"
      tooltiptext="github.com/satyr/xqjs#readme"
      image="http://github.com/favicon.ico"/>
+    <menuitem label="Issues" accesskey="I" class="menuitem-iconic"
+     tooltiptext="github.com/satyr/xqjs/issues"
+     image="http://github.com/favicon.ico"/>
     <menuitem label="CoffeeScript" accesskey="C" class="menuitem-iconic"
      tooltiptext="coffeescript.org"
      image="http://coffeescript.org/documentation/images/favicon.ico"/>
