@@ -122,7 +122,7 @@ function pick(mode, filters){
 }
 function domi(x)(
   main()[x instanceof Node &&
-         !(x.compareDocumentPosition(x.ownerDocument) &
+         !(x.compareDocumentPosition(x.ownerDocument || x) &
            x.DOCUMENT_POSITION_DISCONNECTED)
          ? 'inspectDOMNode' : 'inspectObject'](x),
   x);
