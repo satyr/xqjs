@@ -3,9 +3,9 @@
  ><Description about="urn:mozilla:install-manifest"
  m:id="xqjs@satyr.github.com"
  m:name="xqjs"
- m:version="20100625"
+ m:version="20100703"
  m:creator="satyr"
- m:description="A simple JS console."
+ m:description="Simple JS console"
  m:iconURL="chrome://xqjs/content/chrome/icons/default/xqjs.ico"
  m:optionsURL="chrome://xqjs/content/xqo.xul"
  m:homepageURL="http://github.com/satyr/xqjs">

@@ -41,7 +41,7 @@ function node(ls, doc){
     return df;
   }
   let lm = doc.createElement(ls[0]);
-  if(type((ls = ls.slice(1))[0]) === 'Object')
+  if(type((ls = ls.slice(1))[0]) == 'Object')
     for each(let [k, v] in Iterator(ls.shift())) lm.setAttribute(k, v);
   for each(let l in ls) lm.appendChild(node(l, doc));
   return lm;
@@ -69,7 +69,7 @@ function node4x(xml, doc){
     let [, target, data] = /^<\?(\S+) ?([^]*)\?>$/(xml);
     return doc.createProcessingInstruction(target, data);
   }
-  if(0 in xml && xml[0].nodeKind() === 'attribute')
+  if(0 in xml && xml[0].nodeKind() == 'attribute')
     return [node4x(x, doc) for each(x in xml)];
   var df = doc.createDocumentFragment();
   for each(let x in xml) df.appendChild(node4x(x, doc));
@@ -97,7 +97,7 @@ function fmtitle(win){
   var url = win.location.href.replace(/^http:\/+/, '');
   if(!ttl) return ellipsize(url, LEN);
   ttl = ellipsize(ttl, LEN/2, true);
-  return ttl + ' <'+ ellipsize(url, LEN - ttl.length) +'>';
+  return ttl +' <'+ ellipsize(url, LEN - ttl.length) +'>';
 }
 function enumerate(fn, nm, ci){
   ci = Ci[ci];
@@ -117,7 +117,7 @@ function pick(mode, filters){
   fp.init(self, mode = mode || 'Open', IFP['mode'+ mode]);
   if(filters) for(let [t, f] in Iterator(filters)) fp.appendFilter(t, f);
   fp.appendFilters(IFP.filterAll);
-  return fp.show() === IFP.returnCancel ? null :
+  return fp.show() == IFP.returnCancel ? null :
     fp.file || enumerate.call([], [].push, fp.files, 'nsIFile');
 }
 function domi(x)(
@@ -224,7 +224,7 @@ function inspect(x){
     case 'Function': return x.toSource(0);
     case 'XPCNativeWrapper': case 'XPCCrossOriginWrapper':
     let wos = O2S.call(unwrap(x));
-    os = t[3] === 'N' ? '[object '+ t +' '+ wos +']' : wos;
+    os = t[3] == 'N' ? '[object '+ t +' '+ wos +']' : wos;
     t += ':'+ wos.slice(8, -1);
   }
   var s = (
