@@ -203,6 +203,7 @@ function complete(){
 function dig(re){
   var word, dic = {__proto__: null};
   for(var s in new function(){
+    yield code.value;
     yield results.value;
     for each(var s in bin) yield s;
   }) while([word] = re(s) || 0) word in dic || (yield dic[word] = word);
