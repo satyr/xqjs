@@ -197,19 +197,19 @@ clip.__defineSetter__('img', function(i){
   }
 });
 
-var unwrap = XPCNativeWrapper.unwrap || function unwrap(x){
-  try { return new XPCNativeWrapper(x).wrappedJSObject } catch([]){ return x }
-};
+var keys = (
+  'keys' in Object
+  ? function keys(x) Object.keys(unwrap(Object(x)))
+  : function keys(x) [k for(k in x && new Iterator(unwrap(x), true))]);
+function unwrap(x){ try { return unwrap.ify(x) } catch([]){ return x } }
+unwrap.ify = XPCNativeWrapper.unwrap || (
+  function unwrapify() new XPCNativeWrapper(x).wrappedJSObject);
 function type(x) x == null ? '' : O2S.call(x).slice(8, -1);
 function lazy(o, fn, p){
   if(typeof p != 'string') p = fn.name;
   o.__defineGetter__(p, function() o[p] = delete o[p] && fn.call(o));
   return o;
 }
-function keys(x)(
-  "keys" in Object
-  ? Object.keys(unwrap(Object(x)))
-  : [k for(k in x && new Iterator(unwrap(x), true))]);
 function inspect(x){
   if(x == null) return String(x);
   var t = typeof x;
