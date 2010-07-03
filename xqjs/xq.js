@@ -190,14 +190,15 @@ function complete(){
   var {fit} = complete, pos = code.selectionStart;
   if(fit && fit === code.value.slice(pos - fit.length, pos)){
     var {abr, gen} = complete;
-    code.selectionStart = pos - fit.length + abr.length;
+    code.selectionStart = pos -= fit.length - abr.length;
   } else if(/[\w$]+[^\w$]*$/.test(code.value.slice(0, pos))){
     complete.abr = abr = RegExp.lastMatch;
     gen = dig(RegExp('\\b'+ rescape(abr) +'[\\w$]+', 'g'));
   } else return;
   try { fit = gen.next() } catch(e if e === StopIteration){ fit = '' }
-  if(fit) insert(code.editor, fit.slice(abr.length));
-  else if(complete.fit) code.editor.deleteSelection(code.editor.ePrevious);
+  var {editor} = code;
+  if(fit) insert(editor, fit.slice(abr.length));
+  else if(pos < code.selectionEnd) editor.deleteSelection(editor.ePrevious);
   complete.gen = (complete.fit = fit) && gen;
 }
 function dig(re){
