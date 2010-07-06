@@ -203,7 +203,7 @@ var keys = (
   : function keys(x) [k for(k in x && new Iterator(unwrap(x), true))]);
 function unwrap(x){ try { return unwrap.ify(x) } catch([]){ return x } }
 unwrap.ify = XPCNativeWrapper.unwrap || (
-  function unwrapify() new XPCNativeWrapper(x).wrappedJSObject);
+  function unwrapify(x) new XPCNativeWrapper(x).wrappedJSObject);
 function type(x) x == null ? '' : O2S.call(x).slice(8, -1);
 function lazy(o, fn, p){
   if(typeof p != 'string') p = fn.name;
