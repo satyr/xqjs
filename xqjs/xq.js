@@ -25,10 +25,6 @@ var __ = [], cur = 0, root = document.documentElement, utils =
       oncommand: key.getAttribute('oncommand'),
     }));
   }
-}
-
-function onload(){
-  target((this.arguments || 0)[0] || opener || this);
   for each(let lm in qsa('textbox, checkbox')) this[lm.id] = lm;
   for each(let cb in [macros, coffee]){
     cb.checked = prefs.get(cb.id +'.on');
@@ -40,6 +36,10 @@ function onload(){
       onpopupshowing: 'fillwin(this)',
       onpopuphidden: 'empty(this)',
     }));
+}
+
+function onload(){
+  target((this.arguments || 0)[0] || opener || this);
   code.focus();
 }
 function onunload(){
