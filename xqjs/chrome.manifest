@@ -1,4 +1,3 @@
 content  xqjs .
 resource xqjs .
-locale xqjs en-US locale/en-US/
 overlay chrome://browser/content chrome://xqjs/content/fx.xul
