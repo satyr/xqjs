@@ -228,14 +228,16 @@ function inspect(x){
     t += ':'+ wos.slice(8, -1);
   }
   var s = (
+    x instanceof Ci.nsIDOMNodeList
+    ? fmnodes(x):
     x instanceof Node
     ? let(nt = x.nodeType)(
-      nt === x.DOCUMENT_FRAGMENT_NODE
+      nt == x.DOCUMENT_FRAGMENT_NODE
       ? fmnodes(x.childNodes):
-      nt === x.ELEMENT_NODE
+      nt == x.ELEMENT_NODE
       ? xmls(x.cloneNode(0))
       : x.nodeValue)
-    : x instanceof NodeList ? fmnodes(x) : null);
+    : null);
   if(s == null){
     try { s = String(x) }
     catch(e){ x.__proto__ ? Cu.reportError(e) : t = 'Null' }
