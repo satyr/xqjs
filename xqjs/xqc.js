@@ -82,7 +82,7 @@ function empty(lm){
 function xmls(node)
 XMLSerializer().serializeToString(node).replace(/(<\S+) xmlns=".+?"/g, '$1');
 function fmnodes(ns)
-'['+ Array.map(ns, function(n) n.nodeName).join(', ') +']';
+'['+ Array.map(ns, function(n) n.nodeName).join(' ') +']';
 
 function main() Services.wm.getMostRecentWindow('navigator:browser');
 function hurl() let(b = main().gBrowser) b.addTab.apply(b, arguments);
@@ -242,7 +242,7 @@ function inspect(x){
   if(s == null){
     try { s = String(x) }
     catch(e){ x.__proto__ ? Cu.reportError(e) : t = 'Null' }
-    if(s == null || s === os) s = '{'+ keys(x).join(', ') +'}';
+    if(s == null || s === os) s = '{'+ keys(x).join(' ') +'}';
   }
   return s +'  '+ t;
 }
