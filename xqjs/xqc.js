@@ -229,7 +229,7 @@ function inspect(x){
     t += ':'+ wos.slice(8, -1);
   }
   var s = (
-    x instanceof Ci.nsIDOMNodeList
+    x instanceof Ci.nsIDOMNodeList || x instanceof NamedNodeMap
     ? fmnodes(x):
     x instanceof Node
     ? let(nt = x.nodeType)(
