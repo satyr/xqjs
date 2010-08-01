@@ -180,7 +180,8 @@ clip.__defineSetter__('txt', function(t) this.set({txt: t}));
 clip.__defineSetter__('htm', function(h){
   this.set(h instanceof HTMLElement ? {
     txt: h.textContent,
-    htm: xmls(h.cloneNode(false)).replace('><', function() h.innerHTML),
+    htm: xmls(h.cloneNode(false))
+      .replace('><', function() '>'+ h.innerHTML +'<'),
   } : {txt: h, htm: h});
 });
 clip.__defineSetter__('img', function(i){
