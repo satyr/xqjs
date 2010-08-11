@@ -222,7 +222,7 @@ function inspect(x){
   }
   var os = O2S.call(x), t = os.slice(8, -1);
   switch(t){
-    case 'Function': return x.toSource(0);
+    case 'Function': return x.toString(0);
     case 'XPCNativeWrapper': case 'XPCCrossOriginWrapper':
     let wos = O2S.call(unwrap(x));
     os = t[3] == 'N' ? '[object '+ t +' '+ wos +']' : wos;
