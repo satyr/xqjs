@@ -144,7 +144,7 @@ function xpath(xp, node, one){
 }
 function dom(o, doc) unwrap(node(o, doc || target.win.document));
 
-function copand() say(clip(expand(code.value)));
+function copand() let(c = expand(code.value)) c && say(clip(c));
 function options(){
   showModalDialog('xqo.xul', 1, 'resizable=1');
   lazy(self, macload, 'macrun');
