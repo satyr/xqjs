@@ -61,7 +61,6 @@ function target(win){
   return win;
 }
 function execute(){
-  root.className = '';
   var js = expand(save(code.value));
   if(js){
     try { var r = p(evaluate(js)) } catch(e){ r = err(e) }
@@ -159,6 +158,7 @@ function expand(s){
     else err(e);
     return '';
   }
+  root.className = '';
   return s;
 }
 function cofferr(src, msg, lno, cno){
