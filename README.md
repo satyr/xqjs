@@ -9,7 +9,7 @@ is a simple JavaScript console for [Firefox](http://firefox.com) that:
   - Macro written in JS which can be either:
     - an object of regexp:replacement pairs (see default setting).
     - a function that performs arbitrary string conversion.
-  - [CoffeeScript](http://jashkenas.github.com/coffee-script/).
+  - [Coco](http://satyr.github.com/coco/).
 - has minimal capabilities of history conservation,
   [word completion](http://www.emacswiki.org/emacs/DynamicAbbreviations)
   and [key](https://developer.mozilla.org/en/XUL/key)

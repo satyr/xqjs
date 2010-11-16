@@ -6,7 +6,7 @@ var __ = [], cur = 0, root = document.documentElement, utils =
 
 [function bin() JSON.parse(prefs.get('history', '[]')),
  function macrun() macload(),
- function Coffee() Cu.import('resource://xqjs/coffee.jsm', null).CoffeeScript,
+ function Coco() Cu.import('resource://xqjs/coco.m.js', null).Coco,
  ].reduce(lazy, this);
 
 { let apop = q('Actions').appendChild(lmn('menupopup'));
@@ -136,8 +136,8 @@ function xpath(xp, node, one){
     let a = [], n;
     while((n = r.iterateNext())) a.push(n);
     return a;
-    case r.STRING_TYPE: return r.stringValue;
-    case r.NUMBER_TYPE: return r.numberValue;
+    case r.STRING_TYPE:  return r.stringValue;
+    case r.NUMBER_TYPE:  return r.numberValue;
     case r.BOOLEAN_TYPE: return r.booleanValue;
   }
 }
@@ -153,18 +153,18 @@ function reload() opener ? opener.xqjs(target.win) : location.reload();
 function expand(s){
   if(!s) return '';
   if(macros.checked) try { s = macrun(s) } catch(e){ err(e); return '' }
-  if(coffee.checked) try { s = Coffee.compile(s, {noWrap: true}) } catch(e){
-    if(/ on line (\d+)/.test(e.message)) cofferr(s, e.message, +RegExp.$1);
+  if(coffee.checked) try { s = Coco.compile(s, {bare: true}) } catch(e){
+    if(/ on line (\d+)/.test(e.message)) cocoerr(s, e.message, +RegExp.$1);
     else err(e);
     return '';
   }
   root.className = '';
   return s;
 }
-function cofferr(src, msg, lno, cno){
+function cocoerr(src, msg, lno, cno){
   err();
   let se = Cc['@mozilla.org/scripterror;1'].createInstance(Ci.nsIScriptError);
-  se.init(say('coffee: '+ msg), sourl('coffee', src),
+  se.init(say('coco: '+ msg), sourl('coco', src),
           src.split(/\r?\n/, lno).pop(), lno, cno, se.errorFlag, null);
   Services.console.logMessage(se);
 }

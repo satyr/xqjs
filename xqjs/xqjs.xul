@@ -27,18 +27,17 @@
     <menuitem label="Issues" accesskey="I" class="menuitem-iconic"
      tooltiptext="github.com/satyr/xqjs/issues"
      image="http://github.com/favicon.ico"/>
-    <menuitem label="CoffeeScript" accesskey="C" class="menuitem-iconic"
-     tooltiptext="jashkenas.github.com/coffee-script/"
-     image="http://coffeescript.org/documentation/images/favicon.ico"/>
+    <menuitem label="Coco" accesskey="C" class="menuitem-iconic"
+     tooltiptext="github.com/satyr/coco/#readme"/>
    </menupopup>
   </menu>
  </menubar>
  <textbox id="code" multiline="true" flex="1"/>
  <hbox id="controls" align="baseline">
-  <label control="code" value="Code&#x2191;" accesskey="C"/>
+  <label control="code" value="Code&#x2191;" accesskey="d"/>
   <label control="results" value="Results&#x2193;" accesskey="R"/>
-  <checkbox id="macros" label="Macro"  accesskey="M"/>
-  <checkbox id="coffee" label="Coffee" accesskey="f"/>
+  <checkbox id="macros" label="Macro" accesskey="M"/>
+  <checkbox id="coffee" label="Coco"  accesskey="C"/>
   <button label="Execute" accesskey="x" oncommand="execute()" flex="1"/>
  </hbox>
  <textbox id="results" multiline="true" flex="1"/>
