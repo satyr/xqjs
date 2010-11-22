@@ -28,7 +28,8 @@
      tooltiptext="github.com/satyr/xqjs/issues"
      image="http://github.com/favicon.ico"/>
     <menuitem label="Coco" accesskey="C" class="menuitem-iconic"
-     tooltiptext="github.com/satyr/coco/#readme"/>
+     tooltiptext="github.com/satyr/coco/#readme"
+     image="http://satyr.github.com/coco/coco.png"/>
    </menupopup>
   </menu>
  </menubar>
