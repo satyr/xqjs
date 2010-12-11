@@ -28,7 +28,6 @@ is a simple JavaScript console for [Firefox](http://firefox.com) that:
 - `__` keeps previous results. `_` equals `__[0]`.
 
 ##default macros
-    #{x} //=> f(x,y,z){return x}
     #(x) //=> f(x,y,z)(x)
 
     #'#se.le[ct=or]'

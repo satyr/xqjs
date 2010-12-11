@@ -1,5 +1,5 @@
 ({
-'#(?=[({])': 'function f(x,y,z)',
+'#(?=\\()': 'function f(x,y,z)',
 '#<<(\\w+)(.*)\\n([^]*?)(?:\\n\\1\\b|$)': 'String(<![CDATA[$3]]\>)$2',
 "#[axXz]?('.*?')": function sq($, q){
   switch($[1]){
