@@ -6,7 +6,7 @@ var __ = [], cur = 0, root = document.documentElement, utils =
 
 [function bin() JSON.parse(prefs.get('history', '[]')),
  function macrun() macload(),
- function Coco() Cu.import('resource://xqjs/coco.m.js', null).Coco,
+ function Coco() Cu.import('resource://xqjs/coco.js', null).Coco,
  ].reduce(lazy, this);
 
 { let apop = q('Actions').appendChild(lmn('menupopup'));
