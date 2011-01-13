@@ -4,6 +4,8 @@ var __ = [], cur = 0, root = document.documentElement, utils =
  dom, zen, xmls, xpath,
  type, keys, unwrap];
 
+const Fx4 = !!XPCNativeWrapper.unwrap;
+
 [function bin() JSON.parse(prefs.get('history', '[]')),
  function macrun() macload(),
  function Coco() Cu.import('resource://xqjs/coco.js', null).Coco,
@@ -72,9 +74,9 @@ function evaluate(js){
   var {sb} = target;
   [sb._] = __;
   return Cu.evalInSandbox(
-    target.chrome
+    !Fx4 && target.chrome
     ? 'with(win) eval('+ uneval(js) +')'
-    : ((sb.__proto__ = sb.win), js),
+    : (sb.__proto__ = sb.win, js),
     sb, 1.8, sourl('xqjs', js), 1);
 }
 function sandbox(win){
