@@ -193,9 +193,9 @@ function complete(){
   if(fit && fit === code.value.slice(pos - fit.length, pos)){
     var {abr, gen} = complete;
     code.selectionStart = pos -= fit.length - abr.length;
-  } else if(/[\w$]+[^\w$]*$/.test(code.value.slice(0, pos))){
+  } else if(/\w+\W*$/.test(code.value.slice(0, pos))){
     complete.abr = abr = RegExp.lastMatch;
-    gen = dig(RegExp('\\b'+ rescape(abr) +'[\\w$]+', 'g'));
+    gen = dig(RegExp('\\b'+ rescape(abr) +'\\w+', 'g'));
   } else return;
   try { fit = gen.next() } catch(e if e === StopIteration){ fit = '' }
   var {editor} = code;
