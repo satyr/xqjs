@@ -155,7 +155,9 @@ function reload() opener ? opener.xqjs(target.win) : location.reload();
 function expand(s){
   if(!s) return '';
   if(macros.checked) try { s = macrun(s) } catch(e){ err(e); return '' }
-  if(coffee.checked) try { s = Coco.compile(s, {bare: true}) } catch(e){
+  if(coffee.checked) try {
+    s = Coco.compile(s, {bare: true, repl: true})
+  } catch(e){
     if(/ on line (\d+)/.test(e.message)) cocoerr(s, e.message, +RegExp.$1);
     else err(e);
     return '';
@@ -204,12 +206,13 @@ function complete(){
   complete.gen = (complete.fit = fit) && gen;
 }
 function dig(re){
-  var word, dic = {__proto__: null};
-  for(var s in new function(){
-    yield code.value;
-    yield results.value;
-    for each(var s in bin) yield s;
-  }) while([word] = re(s) || 0) word in dic || (yield dic[word] = word);
+  var word, dic = {__proto__: null}
+  for(var s in function(){
+    yield code.value
+    yield results.value
+    for each(var s in bin) yield s
+  }()) while([word] = re.exec(s) || 0)
+    word in dic || (yield dic[word] = word)
 }
 
 function fillwin(menu){

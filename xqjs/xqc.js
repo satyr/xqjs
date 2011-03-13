@@ -1,11 +1,11 @@
-const {classes: Cc, interfaces: Ci, utils: Cu, results: Cr} = Components;
-try { Cu.import('resource://gre/modules/Services.jsm') }
-catch([]){ Cu.import('resource://xqjs/Services.jsm') }
-Cu.import('resource://xqjs/Preferences.jsm');
+const {classes: Cc, interfaces: Ci, utils: Cu, results: Cr} = Components
 
-const PREF_ROOT = 'extensions.xqjs.';
-const O2S = Object.prototype.toString;
-const NS = {
+Cu.import('resource://gre/modules/Services.jsm')
+Cu.import('resource://xqjs/Preferences.jsm')
+
+const PREF_ROOT = 'extensions.xqjs.'
+, O2S = {}.toString
+, NS  = {
   x: 'http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul',
   e: 'http://www.mozilla.org/2004/em-rdf#',
   a: 'http://www.w3.org/2005/Atom',
@@ -13,7 +13,7 @@ const NS = {
   r: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
   h: 'http://www.w3.org/1999/xhtml',
   m: 'http://www.w3.org/1998/Math/MathML',
-};
+}
 lazy(this, function ELLIPSIS(){
   try {
     return Services.prefs.getComplexValue(
@@ -198,18 +198,15 @@ clip.__defineSetter__('img', function(i){
   }
 });
 
-var keys = (
-  'keys' in Object
-  ? function keys(x) Object.keys(unwrap(Object(x)))
-  : function keys(x) [k for(k in x && new Iterator(unwrap(x), true))]);
-function unwrap(x){ try { return unwrap.ify(x) } catch([]){ return x } }
-unwrap.ify = XPCNativeWrapper.unwrap || (
-  function unwrapify(x) new XPCNativeWrapper(x).wrappedJSObject);
-function type(x) x == null ? '' : O2S.call(x).slice(8, -1);
+var keys = Object.getOwnPropertyNames
+function unwrap(x){
+  try { return XPCNativeWrapper.unwrap(x) } catch([]){ return x }
+}
+function type(x) O2S.call(x).slice(8, -1)
 function lazy(o, fn, p){
-  if(typeof p != 'string') p = fn.name;
-  o.__defineGetter__(p, function() o[p] = delete o[p] && fn.call(o));
-  return o;
+  if(typeof p != 'string') p = fn.name
+  o.__defineGetter__(p, function() o[p] = delete o[p] && fn.call(o))
+  return o
 }
 function inspect(x){
   if(x == null) return String(x);
@@ -256,9 +253,9 @@ function ellipsize(str, num, end){
   return str.slice(0, num - i) + ELLIPSIS + str.slice(str.length - i + 1);
 }
 function sourl(type, code) 'data:'+ type +';charset=utf-8,'+ encodeURI(code);
-function insert(editor, s)(
-  editor.QueryInterface(Ci.nsIPlaintextEditor).insertText(s),
-  editor);
+function insert(editor, s)
+( editor.QueryInterface(Ci.nsIPlaintextEditor).insertText(s)
+, editor )
 
 function zen(code){
   var name = /(?:([\w$]*)\|)?([A-Za-z_][-.\w]*)/;
