@@ -217,31 +217,31 @@ function inspect(x){
     case 'xml': x = x.toXMLString();
     default: return x +'  '+ t;
   }
-  var os = O2S.call(x), t = os.slice(8, -1);
-  switch(t){
-    case 'Function': return x.toString(0);
-    case 'XPCNativeWrapper': case 'XPCCrossOriginWrapper':
-    let wos = O2S.call(unwrap(x));
-    os = t[3] == 'N' ? '[object '+ t +' '+ wos +']' : wos;
-    t += ':'+ wos.slice(8, -1);
-  }
-  var s = (
+  var os = O2S.call(x), t = os.slice(8, -1)
+  if(t == 'Function') return x.toString(0)
+  var s =
     x instanceof Ci.nsIDOMNodeList || x instanceof NamedNodeMap
     ? fmnodes(x):
     x instanceof Node
-    ? let(nt = x.nodeType)(
+    ? let(nt = x.nodeType)
       nt == x.DOCUMENT_FRAGMENT_NODE
       ? fmnodes(x.childNodes):
       nt == x.ELEMENT_NODE
       ? xmls(x.cloneNode(0))
-      : x.nodeValue)
-    : null);
+      : x.nodeValue
+    : null
   if(s == null){
     try { s = String(x) }
     catch(e){ x.__proto__ ? Cu.reportError(e) : t = 'Null' }
-    if(s == null || s === os) s = '{'+ keys(x).join(' ') +'}';
+    switch(s){
+    case '[object XrayWrapper '+ os +']':
+      t += ':XrayWrapper'
+      x = unwrap(x)
+    case null: case void 0: case os:
+      s = '{'+ keys(x).join(' ') +'}'
+    }
   }
-  return s +'  '+ t;
+  return s +'  '+ t
 }
 
 function rescape(s) String(s).replace(/[.?*+^$|()\{\[\\]/g, '\\$&');
