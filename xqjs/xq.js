@@ -1,11 +1,12 @@
-var __ = [], cur = 0, root = document.documentElement, utils =
+var __    = []
+  , cur   = 0
+  , root  = document.documentElement
+  , utils =
 [p, say, err, target,
  log, clip, hurl, domi, fbug,
  dom, zen, xmls, xpath,
- type, keys, unwrap];
-
-const Fx4 = !!XPCNativeWrapper.unwrap;
-
+ type, keys, names, unwrap]
+;
 [function bin() JSON.parse(prefs.get('history', '[]')),
  function macrun() macload(),
  function Coco() Cu.import('resource://xqjs/coco.js', null).Coco,
@@ -71,13 +72,10 @@ function execute(){
   return r;
 }
 function evaluate(js){
-  var {sb} = target;
-  [sb._] = __;
-  return Cu.evalInSandbox(
-    !Fx4 && target.chrome
-    ? 'with(win) eval('+ uneval(js) +')'
-    : (sb.__proto__ = sb.win, js),
-    sb, 1.8, sourl('xqjs', js), 1);
+  var {sb} = target
+  sb._ = __[0]
+  sb.__proto__ = sb.win
+  return Cu.evalInSandbox(js, sb, 1.8, sourl('xqjs', js), 1)
 }
 function sandbox(win){
   var sb = Cu.Sandbox(win);
@@ -99,10 +97,9 @@ function macload(){
 function preval(id, sb){
   var js = prefs.get(id).trim();
   if(js) try {
-    return (
-      /^\w+:\/\/\S+$/.test(js)
+    return /^\w+:\/\/\S+$/.test(js)
       ? Services.scriptloader.loadSubScript(js, sb)
-      : Cu.evalInSandbox(js, sb, 1.8, sourl('xq'+ id, js), 1));
+      : Cu.evalInSandbox(js, sb, 1.8, sourl('xq'+ id, js), 1)
   } catch(e){ Cu.reportError(e) }
 }
 

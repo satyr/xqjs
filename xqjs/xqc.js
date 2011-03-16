@@ -4,7 +4,6 @@ Cu.import('resource://gre/modules/Services.jsm')
 Cu.import('resource://xqjs/Preferences.jsm')
 
 const PREF_ROOT = 'extensions.xqjs.'
-, O2S = {}.toString
 , NS  = {
   x: 'http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul',
   e: 'http://www.mozilla.org/2004/em-rdf#',
@@ -14,6 +13,7 @@ const PREF_ROOT = 'extensions.xqjs.'
   h: 'http://www.w3.org/1999/xhtml',
   m: 'http://www.w3.org/1998/Math/MathML',
 }
+, O2S = NS.toString
 lazy(this, function ELLIPSIS(){
   try {
     return Services.prefs.getComplexValue(
@@ -198,7 +198,8 @@ clip.__defineSetter__('img', function(i){
   }
 });
 
-var keys = Object.getOwnPropertyNames
+var {keys} = Object
+function names(x) Object.getOwnPropertyNames(x)
 function unwrap(x){
   try { return XPCNativeWrapper.unwrap(x) } catch([]){ return x }
 }
