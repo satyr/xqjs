@@ -7,10 +7,10 @@ var __    = []
  dom, zen, xmls, xpath,
  type, keys, names, unwrap]
 ;
-[function bin() JSON.parse(prefs.get('history', '[]')),
- function macrun() macload(),
- function Coco() Cu.import('resource://xqjs/coco.js', null).Coco,
- ].reduce(lazy, this);
+[function bin() JSON.parse(prefs.get('history', '[]'))
+,function macrun() macload()
+,function Coco() Cu.import('resource://xqjs/coco.js', null).Coco
+].reduce(lazy, this)
 
 { let apop = q('Actions').appendChild(lmn('menupopup'));
   for each(let key in qsa('key')){
