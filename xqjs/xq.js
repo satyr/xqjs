@@ -212,6 +212,20 @@ function dig(re){
     word in dic || (yield dic[word] = word)
 }
 
+function isearch(text){
+  if(!text) return ''
+  for(var i = -1, s; s = bin[++i];) if(~s.indexOf(text)){
+    cur = i+1
+    code.value = s
+    return ''
+  }
+  return 'notfound'
+}
+function isearchkey(ev){
+  if(ev.shiftKey || ev.ctrlKey || ev.altKey || ev.metaKey) return
+  if(ev.keyCode == ev.DOM_VK_RETURN) ev.preventDefault(), code.focus()
+}
+
 function fillwin(menu){
   const {nsIDocShell} = Ci;
   const DS_TYP = Ci.nsIDocShellTreeItem['type'+ menu.parentNode.id];

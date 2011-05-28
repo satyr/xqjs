@@ -39,6 +39,11 @@
   <label control="results" value="Results&#x2193;" accesskey="R"/>
   <checkbox id="macros" label="Macro" accesskey="M"/>
   <checkbox id="coffee" label="Coco"  accesskey="C"/>
+  <textbox id="search" emptytext=" Search history" accesskey="S"
+   type="search" timeout="200" size="16"
+   oncommand="search.className = isearch(value)"
+   onkeydown="isearchkey(event)"
+   onblur="value = search.className = ''"/>
   <button label="Execute" accesskey="x" oncommand="execute()" flex="1"/>
  </hbox>
  <textbox id="results" multiline="true" flex="1"/>

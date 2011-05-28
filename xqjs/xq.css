@@ -1,4 +1,9 @@
-.error #results {font-style:oblique}
-#controls > * {margin:0 0 0 4px}
-.buttons > button {margin:0; min-width:4em}
 textbox {font-family:"Consolas",monospace; margin:0}
+
+#controls > label {margin:0 2px 3px !important}
+#controls > :not(label) {margin:0 !important}
+#search {padding:0 !important}
+.error #results {font-style:oblique}
+.notfound {box-shadow:0pt 0pt 0pt 1em salmon inset}
+
+.buttons > button {margin:0; min-width:4em}
