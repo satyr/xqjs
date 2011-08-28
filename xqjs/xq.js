@@ -64,12 +64,15 @@ function target(win){
   return win;
 }
 function execute(){
-  var js = expand(save(code.value));
+  var {value} = code, js = expand(value)
   if(js){
-    try { var r = p(evaluate(js)) } catch(e){ r = err(e) }
-    r === __[0] || __.unshift(r);
+    try {
+      var r = p(evaluate(js))
+      save(value)
+    } catch(e){ r = err(e) }
+    r === __[0] || __.unshift(r)
   }
-  return r;
+  return r
 }
 function evaluate(js){
   var {sb} = target
@@ -172,19 +175,20 @@ function cocoerr(src, msg, lno, cno){
 
 function go(dir){
   if((cur -= dir) < 1){
-    if(save(code.value)) code.value = '';
-    return cur = 0;
+    if(save(code.value)) code.value = ''
+    return cur
   }
-  if(bin.length < cur) return cur = bin.length;
-  code.value = bin[cur - 1];
-  return cur;
+  if(bin.length < cur) return cur = bin.length
+  code.value = bin[cur - 1]
+  return cur
 }
 function save(s){
-  var i = s && bin.indexOf(s);
-  if(!i) return s;
-  if(~i) bin.splice(i, 1);
-  bin.unshift(s);
-  return s;
+  cur = 0
+  var i = s && bin.indexOf(s)
+  if(!i) return s
+  if(~i) bin.splice(i, 1)
+  bin.unshift(s)
+  return s
 }
 
 function complete(){
