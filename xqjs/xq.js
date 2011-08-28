@@ -33,26 +33,26 @@ var __    = []
     cb.checked = prefs.get(cb.id +'.on');
     cb.setAttribute('onclick', 'event.detail || code.focus()');
   }
-  for each(let menu in qsa('#Chrome, #Content'))
+  for each(let menu in qsa('#Chrome, #Content')){
     menu.appendChild(lmn('menupopup', {
-      oncommand: 'target(event.target.win)',
       onpopupshowing: 'fillwin(this)',
       onpopuphidden: 'empty(this)',
-    }));
+    }))
+  }
 }
 
-function onload(){
-  target((this.arguments || 0)[0] || opener || this);
-  code.focus();
+self.onload = function onload(){
+  target((this.arguments || 0)[0] || opener || this)
+  setTimeout(function() code.focus(), 333)
 }
-function onunload(){
-  save(code.value);
-  bin.length = Math.min(bin.length, prefs.get('history.max'));
+self.onunload = function onunload(){
+  save(code.value)
+  bin.length = Math.min(bin.length, prefs.get('history.max'))
   prefs.set({
     history: JSON.stringify(bin),
     'macros.on': macros.checked,
     'coffee.on': coffee.checked,
-  });
+  })
 }
 
 function target(win){
@@ -231,28 +231,29 @@ function isearchkey(ev){
 }
 
 function fillwin(menu){
-  const {nsIDocShell} = Ci;
-  const DS_TYP = Ci.nsIDocShellTreeItem['type'+ menu.parentNode.id];
-  const DS_DIR = nsIDocShell.ENUMERATE_FORWARDS;
-  const FS = (Cc['@mozilla.org/browser/favicon-service;1']
-              .getService(Ci.nsIFaviconService));
-  var len = 0;
+  const {nsIDocShell} = Ci
+      , DS_TYP = Ci.nsIDocShellTreeItem['type'+ menu.parentNode.id]
+      , DS_DIR = nsIDocShell.ENUMERATE_FORWARDS
+      , FS = (Cc['@mozilla.org/browser/favicon-service;1']
+              .getService(Ci.nsIFaviconService))
+  var len = 0
   enumerate(function(xw){
     enumerate(function(ds){
-      var doc = (ds.contentViewer || 0).DOMDocument;
-      if(!doc || doc.location.href === 'about:blank') return;
-      var win = doc.defaultView, label = fmtitle(win);
-      var icon = FS.getFaviconImageForPage(doc.documentURIObject).spec;
-      var mi = lmn('menuitem', {class: 'menuitem-iconic', image: icon});
-      if(win === target.win) mi.setAttribute('disabled', true);
+      var doc = (ds.contentViewer || 0).DOMDocument
+      if(!doc || doc.location.href === 'about:blank') return
+      var win = doc.defaultView, label = fmtitle(win)
+      var icon = FS.getFaviconImageForPage(doc.documentURIObject).spec
+      var mi = lmn('menuitem', {class: 'menuitem-iconic', image: icon})
+      if(win === target.win) mi.setAttribute('disabled', true)
       else if(++len <= 36){
-        let key = len < 11 ? len % 10 : (len-1).toString(36).toUpperCase();
-        mi.setAttribute('accesskey', key);
-        label = key +' '+ label;
+        let key = len < 11 ? len % 10 : (len-1).toString(36).toUpperCase()
+        mi.setAttribute('accesskey', key)
+        label = key +' '+ label
       }
-      mi.setAttribute('label', label);
-      menu.appendChild(mi).win = win;
-    }, xw.docShell.getDocShellEnumerator(DS_TYP, DS_DIR), nsIDocShell);
-  }, Services.wm.getXULWindowEnumerator(null), Ci.nsIXULWindow);
-  len || menu.appendChild(lmn('menuitem', {label: '-', disabled: true}));
+      mi.setAttribute('label', label)
+      mi.setAttribute('oncommand', 'target(event.target.win)')
+      menu.appendChild(mi).win = win
+    }, xw.docShell.getDocShellEnumerator(DS_TYP, DS_DIR), nsIDocShell)
+  }, Services.wm.getXULWindowEnumerator(null), Ci.nsIXULWindow)
+  len || menu.appendChild(lmn('menuitem', {label: '-', disabled: true}))
 }
