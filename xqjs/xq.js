@@ -12,26 +12,26 @@ var __    = []
 ,function Coco() Cu.import('resource://xqjs/coco.js', null).Coco
 ].reduce(lazy, this)
 
-{ let apop = q('Actions').appendChild(lmn('menupopup'));
+{ let apop = q('Actions').appendChild(lmn('menupopup'))
   for each(let key in qsa('key')){
-    let {id} = key, json = prefs.get(id, '{}'), atrs;
+    let {id} = key, json = prefs.get(id, '{}'), atrs
     try { atrs = JSON.parse(json) } catch(e){
       Cu.reportError(SyntaxError(
-        'failed to parse '+ id +'\n'+ json, e.fileName, e.lineNumber));
-      prefs.reset(id);
-      atrs = JSON.parse(prefs.get(id));
+        'failed to parse '+ id +'\n'+ json, e.fileName, e.lineNumber))
+      prefs.reset(id)
+      atrs = JSON.parse(prefs.get(id))
     }
-    for(let k in atrs) key.setAttribute(k, atrs[k]);
+    for(let k in atrs) key.setAttribute(k, atrs[k])
     apop.appendChild(lmn('menuitem', {
       key: key.id,
       label: key.getAttribute('label'),
       oncommand: key.getAttribute('oncommand'),
-    }));
+    }))
   }
-  for each(let lm in qsa('textbox, checkbox')) this[lm.id] = lm;
+  for each(let lm in qsa('textbox, checkbox')) this[lm.id] = lm
   for each(let cb in [macros, coffee]){
-    cb.checked = prefs.get(cb.id +'.on');
-    cb.setAttribute('onclick', 'event.detail || code.focus()');
+    cb.checked = prefs.get(cb.id +'.on')
+    cb.setAttribute('onclick', 'event.detail || code.focus()')
   }
   for each(let menu in qsa('#Chrome, #Content')){
     menu.appendChild(lmn('menupopup', {
@@ -56,12 +56,12 @@ self.onunload = function onunload(){
 }
 
 function target(win){
-  target.win = win = win && win.document ? win : opener || self;
-  target.chrome = chromep(win);
-  lazy(target, function sb() sandbox(this.win));
-  root.setAttribute('target', win.location);
-  document.title = 'xqjs'+ (win === self ? '' : ': '+ fmtitle(win));
-  return win;
+  target.win = win = win && win.document ? win : opener || self
+  target.chrome = chromep(win)
+  lazy(target, function sb() sandbox(this.win))
+  root.setAttribute('target', win.location)
+  document.title = 'xqjs'+ (win === self ? '' : ': '+ fmtitle(win))
+  return win
 }
 function execute(){
   var {value} = code, js = expand(value)
@@ -81,24 +81,24 @@ function evaluate(js){
   return Cu.evalInSandbox(js, sb, 1.8, sourl('xqjs', js), 1)
 }
 function sandbox(win){
-  var sb = Cu.Sandbox(win);
-  for each(let f in utils) sb[f.name] = f;
-  sb.ns = NS;
-  sb.__defineGetter__('main', main);
-  sb.win = unwrap(win);
-  sb.doc = unwrap(win.document);
-  sb.__ = __;
-  preval('userjs', sb);
-  return sb;
+  var sb = Cu.Sandbox(win)
+  for each(let f in utils) sb[f.name] = f
+  sb.ns = NS
+  sb.__defineGetter__('main', main)
+  sb.win = unwrap(win)
+  sb.doc = unwrap(win.document)
+  sb.__ = __
+  preval('userjs', sb)
+  return sb
 }
 function macload(){
-  var m = preval('macros', Cu.Sandbox(this)) || String;
-  if(typeof m == 'function') return m;
-  m = [[RegExp(k, 'g'), v] for([k, v] in Iterator(m))];
-  return function mac(s) m.reduce(function(s, [re, xp]) s.replace(re, xp), s);
+  var m = preval('macros', Cu.Sandbox(this)) || String
+  if(typeof m == 'function') return m
+  m = [[RegExp(k, 'g'), v] for([k, v] in Iterator(m))]
+  return function mac(s) m.reduce(function(s, [re, xp]) s.replace(re, xp), s)
 }
 function preval(id, sb){
-  var js = prefs.get(id).trim();
+  var js = prefs.get(id).trim()
   if(js) try {
     return /^\w+:\/\/\S+$/.test(js)
       ? Services.scriptloader.loadSubScript(js, sb)
@@ -106,71 +106,71 @@ function preval(id, sb){
   } catch(e){ Cu.reportError(e) }
 }
 
-function p(x)(say(inspect(x)), x);
+function p(x)(say(inspect(x)), x)
 function say(x){
-  var {editor, inputField} = results, s = String(x), t;
+  var {editor, inputField} = results, s = String(x), t
   if(s === say.last){
-    inputField.setSelectionRange(s.length, s.length + say.pad);
-    t = '  x'+ ++say.dup;
-    say.pad = t.length;
+    inputField.setSelectionRange(s.length, s.length + say.pad)
+    t = '  x'+ ++say.dup
+    say.pad = t.length
   } else {
-    editor.beginningOfDocument();
-    say.last = s, say.dup = 1, say.pad = 0;
-    t = s +'\n';
+    editor.beginningOfDocument()
+    say.last = s, say.dup = 1, say.pad = 0
+    t = s +'\n'
   }
-  insert(editor, t).beginningOfDocument();
-  inputField.scrollTop = 0;
-  return x;
+  insert(editor, t).beginningOfDocument()
+  inputField.scrollTop = 0
+  return x
 }
 function err(e){
-  root.className = 'error';
-  if(e) Cu.reportError(say(e));
-  return e;
+  root.className = 'error'
+  if(e) Cu.reportError(say(e))
+  return e
 }
 function xpath(xp, node, one){
-  if(typeof node != 'object') one = node, node = target.win.document;
+  if(typeof node != 'object') one = node, node = target.win.document
   var r = (node.ownerDocument || node)
-    .evaluate(xp, node, function nsr(x) NS[x] || NS[x[0]],
-              XPathResult.ANY_TYPE, null);
+          .evaluate(xp, node, function nsr(x) NS[x] || NS[x[0]],
+                    XPathResult.ANY_TYPE, null)
   switch(r.resultType){
     case r.UNORDERED_NODE_ITERATOR_TYPE:
-    if(one) return r.iterateNext();
-    let a = [], n;
-    while((n = r.iterateNext())) a.push(n);
-    return a;
-    case r.STRING_TYPE:  return r.stringValue;
-    case r.NUMBER_TYPE:  return r.numberValue;
-    case r.BOOLEAN_TYPE: return r.booleanValue;
+    if(one) return r.iterateNext()
+    let a = [], n
+    while((n = r.iterateNext())) a.push(n)
+    return a
+    case r.STRING_TYPE:  return r.stringValue
+    case r.NUMBER_TYPE:  return r.numberValue
+    case r.BOOLEAN_TYPE: return r.booleanValue
   }
 }
-function dom(o, doc) unwrap(node(o, doc || target.win.document));
+function dom(o, doc) unwrap(node(o, doc || target.win.document))
 
-function copand() let(c = expand(code.value)) c && say(clip(c));
+function copand() let(c = expand(code.value)) c && say(clip(c))
 function options(){
-  showModalDialog('xqo.xul', 1, 'resizable=1');
-  lazy(self, macload, 'macrun');
+  showModalDialog('xqo.xul', 1, 'resizable=1')
+  lazy(self, macload, 'macrun')
 }
-function reload() opener ? opener.xqjs(target.win) : location.reload();
+function reload() opener ? opener.xqjs(target.win) : location.reload()
 
 function expand(s){
-  if(!s) return '';
+  if(!s) return ''
   if(macros.checked) try { s = macrun(s) } catch(e){ err(e); return '' }
   if(coffee.checked) try {
     s = Coco.compile(s, {bare: true, repl: true})
   } catch(e){
-    if(/ on line (\d+)/.test(e.message)) cocoerr(s, e.message, +RegExp.$1);
-    else err(e);
-    return '';
+    if(/ on line (\d+)/.test(e.message)) cocoerr(s, e.message, +RegExp.$1)
+    else err(e)
+    return ''
   }
-  root.className = '';
-  return s;
+  root.className = ''
+  return s
 }
 function cocoerr(src, msg, lno, cno){
-  err();
-  let se = Cc['@mozilla.org/scripterror;1'].createInstance(Ci.nsIScriptError);
-  se.init(say('coco: '+ msg), sourl('coco', src),
-          src.split(/\r?\n/, lno).pop(), lno, cno, se.errorFlag, null);
-  Services.console.logMessage(se);
+  err()
+  let se = Cc['@mozilla.org/scripterror;1'].createInstance(Ci.nsIScriptError)
+  se.init(say('Coco: '+ msg), sourl('coco', src),
+          src.split(/\r?\n/, lno).pop(), lno, cno, se.errorFlag, null)
+  Services.console.logMessage(se)
 }
 
 function go(dir){
@@ -192,22 +192,22 @@ function save(s){
 }
 
 function complete(){
-  var {fit} = complete, pos = code.selectionStart;
+  var {fit} = complete, pos = code.selectionStart
   if(fit && fit === code.value.slice(pos - fit.length, pos)){
-    var {abr, gen} = complete;
-    code.selectionStart = pos -= fit.length - abr.length;
+    var {abr, gen} = complete
+    code.selectionStart = pos -= fit.length - abr.length
   } else if(/\w+\W*$/.test(code.value.slice(0, pos))){
-    complete.abr = abr = RegExp.lastMatch;
-    gen = dig(RegExp('\\b'+ rescape(abr) +'\\w+', 'g'));
-  } else return;
+    complete.abr = abr = RegExp.lastMatch
+    gen = dig(RegExp('\\b'+ rescape(abr) +'\\w+', 'g'))
+  } else return
   try { fit = gen.next() } catch(e if e === StopIteration){ fit = '' }
-  var {editor} = code;
-  if(fit) insert(editor, fit.slice(abr.length));
-  else if(pos < code.selectionEnd) editor.deleteSelection(editor.ePrevious);
-  complete.gen = (complete.fit = fit) && gen;
+  var {editor} = code
+  if(fit) insert(editor, fit.slice(abr.length))
+  else if(pos < code.selectionEnd) editor.deleteSelection(editor.ePrevious)
+  complete.gen = (complete.fit = fit) && gen
 }
 function dig(re){
-  var word, dic = {__proto__: null}
+  var word, dic = Object.create(null)
   for(var s in function(){
     yield code.value
     yield results.value
