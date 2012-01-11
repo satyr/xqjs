@@ -9,16 +9,16 @@ pref('extensions.xqjs.keyOpen',
 pref('extensions.xqjs.keyExecute',
      '{"keycode":"VK_RETURN", "modifiers":"accel"}');
 pref('extensions.xqjs.keyHistoryBack',
-     '{"keycode":"VK_UP", "modifiers":"accel"}');
+     '{"key":"[", "modifiers":"accel"}');
 pref('extensions.xqjs.keyHistoryForward',
-     '{"keycode":"VK_DOWN", "modifiers":"accel"}');
+     '{"key":"]", "modifiers":"accel"}');
 pref('extensions.xqjs.keyComplete',
      '{"key":"/", "modifiers":"accel"}');
 pref('extensions.xqjs.keyCopyCode',
      '{"key":"C", "modifiers":"accel,shift"}');
 pref('extensions.xqjs.keyOptions',
-     '{"keycode":"VK_F1"}');
+     '{"key":",", "modifiers":"accel"}');
 pref('extensions.xqjs.keyReload',
      '{"key":"R", "modifiers":"accel"}');
 pref('extensions.xqjs.keyClose',
-     '{"keycode":"VK_ESCAPE"}');
+     '{"key":"W", "modifiers":"accel"}');
