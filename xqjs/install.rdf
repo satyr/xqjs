@@ -3,7 +3,7 @@
  ><Description about="urn:mozilla:install-manifest"
  m:id="xqjs@satyr.github.com"
  m:name="xqjs"
- m:version="20120112"
+ m:version="20121006"
  m:creator="satyr"
  m:description="Simple JS console"
  m:iconURL="chrome://xqjs/content/chrome/icons/default/xqjs.ico"
@@ -11,6 +11,6 @@
  m:homepageURL="http://github.com/satyr/xqjs">
   <m:targetApplication><!--Firefox--><Description
    m:id="{ec8030f7-c20a-464f-9b0e-13a3a9e97384}"
-   m:minVersion="9.0"
-   m:maxVersion="12.*"
+   m:minVersion="15.0"
+   m:maxVersion="18.0a1"
    /></m:targetApplication></Description></RDF>

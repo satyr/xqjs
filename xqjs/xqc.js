@@ -147,8 +147,10 @@ clip.get = function clipget(flavors){
   function get(flv){
     flv = dic[flv] || flv
     if(!board.hasDataMatchingFlavors([flv], 1, GC)) return ''
-    var dat = {}, xfer = Cc['@mozilla.org/widget/transferable;1']
-                         .createInstance(Ci.nsITransferable)
+    var dat  = {}
+      , xfer = Cc['@mozilla.org/widget/transferable;1']
+               .createInstance(Ci.nsITransferable)
+    'init' in xfer && xfer.init(null)
     xfer.addDataFlavor(flv)
     board.getData(xfer, GC)
     xfer.getTransferData(flv, dat, {})
@@ -165,6 +167,7 @@ clip.set = function clipset(kv){ // {txt: 't', htm: '<b>t</b>'}
   const {board, dic} = clip
       , xfer = Cc['@mozilla.org/widget/transferable;1']
                .createInstance(Ci.nsITransferable)
+  'init' in xfer && xfer.init(null)
   for(let [flv, val] in Iterator(kv)){
     let ss = (Cc['@mozilla.org/supports-string;1']
               .createInstance(Ci.nsISupportsString))
